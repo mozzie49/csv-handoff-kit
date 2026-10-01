@@ -1,0 +1,111 @@
+{
+  "comparison": "exact unique text-key tuples; exact text; decimal numeric values; XLSX storage types",
+  "content_status": "differences",
+  "contract_sha256": "0ce6b8e742c2d548e925a36762fabb46d54e910976c3362f854771e5fcfd5fd1",
+  "differences": [
+    {
+      "actual": null,
+      "baseline_row": 3,
+      "expected": [
+        "CN",
+        "00007",
+        "李四",
+        "-3.75"
+      ],
+      "key": [
+        "CN",
+        "00007"
+      ],
+      "kind": "record_removed",
+      "returned_row": null
+    },
+    {
+      "actual": "Zoë edited",
+      "baseline_cell": "C4",
+      "baseline_row": 4,
+      "cell": "C2",
+      "column": "Label",
+      "expected": "Zoë",
+      "kind": "text_change",
+      "returned_row": 2
+    },
+    {
+      "actual": [
+        "JP",
+        "00009",
+        "架空",
+        "2"
+      ],
+      "actual_types": [
+        "text",
+        "text",
+        "text",
+        "number"
+      ],
+      "baseline_row": null,
+      "expected": null,
+      "key": [
+        "JP",
+        "00009"
+      ],
+      "kind": "record_added",
+      "returned_row": 4
+    }
+  ],
+  "key_columns": [
+    "Region",
+    "AccountID"
+  ],
+  "notes": [
+    "Differences may be intentional edits; this report does not infer corruption.",
+    "Keys are exact ordered text tuples. No trimming, case folding, Unicode normalization, or fuzzy matching.",
+    "Modified keys are removed and added records; intent is not inferred.",
+    "Movement means a matched record has a different worksheet row number, including shifts caused by insertions/deletions.",
+    "Changed counts matched records with any cell observation; type_changed and representation_changed are overlapping subsets. Movement is separate.",
+    "No formula evaluation, formatting comparison, identity verification, or recovery of lost data.",
+    "This report includes baseline and returned values and keys; treat it as sensitive when the sources are sensitive."
+  ],
+  "record_changes": [
+    {
+      "baseline_row": 4,
+      "key": [
+        "US",
+        "00123"
+      ],
+      "kinds": [
+        "text_change"
+      ],
+      "returned_row": 2
+    }
+  ],
+  "record_summary": {
+    "added": 1,
+    "changed": 1,
+    "moved": 2,
+    "removed": 1,
+    "representation_changed": 0,
+    "type_changed": 0,
+    "unchanged": 1
+  },
+  "returned_sha256": "91fddaa25eee0d9a4c4533ace45f6eab3cfc77fed8664624c705b090d45240d4",
+  "row_movements": [
+    {
+      "baseline_row": 2,
+      "key": [
+        "CN",
+        "00123"
+      ],
+      "returned_row": 3
+    },
+    {
+      "baseline_row": 4,
+      "key": [
+        "US",
+        "00123"
+      ],
+      "returned_row": 2
+    }
+  ],
+  "schema": "csv-handoff-diff/v2",
+  "status": "differences"
+}
