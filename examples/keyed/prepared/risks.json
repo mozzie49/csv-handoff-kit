@@ -1,0 +1,68 @@
+{
+  "cells": [
+    {
+      "cell": "B2",
+      "column": "AccountID",
+      "flags": [
+        "leading_zero"
+      ],
+      "type": "text",
+      "value": "00123"
+    },
+    {
+      "cell": "C2",
+      "column": "Label",
+      "flags": [
+        "unicode_text"
+      ],
+      "type": "text",
+      "value": "张三"
+    },
+    {
+      "cell": "B3",
+      "column": "AccountID",
+      "flags": [
+        "leading_zero"
+      ],
+      "type": "text",
+      "value": "00007"
+    },
+    {
+      "cell": "C3",
+      "column": "Label",
+      "flags": [
+        "unicode_text"
+      ],
+      "type": "text",
+      "value": "李四"
+    },
+    {
+      "cell": "D3",
+      "column": "Amount",
+      "flags": [
+        "formula_looking"
+      ],
+      "type": "number",
+      "value": "-3.75"
+    },
+    {
+      "cell": "B4",
+      "column": "AccountID",
+      "flags": [
+        "leading_zero"
+      ],
+      "type": "text",
+      "value": "00123"
+    },
+    {
+      "cell": "C4",
+      "column": "Label",
+      "flags": [
+        "unicode_text"
+      ],
+      "type": "text",
+      "value": "Zoë"
+    }
+  ],
+  "schema": "csv-handoff-risks/v1"
+}

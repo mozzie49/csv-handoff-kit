@@ -1,0 +1,53 @@
+{
+  "columns": [
+    {
+      "name": "Region",
+      "type": "text"
+    },
+    {
+      "name": "AccountID",
+      "type": "text"
+    },
+    {
+      "name": "Label",
+      "type": "text"
+    },
+    {
+      "name": "Amount",
+      "type": "number"
+    }
+  ],
+  "dialect": {
+    "delimiter": ",",
+    "quotechar": "\""
+  },
+  "key_columns": [
+    "Region",
+    "AccountID"
+  ],
+  "row_order": "keyed",
+  "rows": [
+    [
+      "CN",
+      "00123",
+      "张三",
+      "12.50"
+    ],
+    [
+      "CN",
+      "00007",
+      "李四",
+      "-3.75"
+    ],
+    [
+      "US",
+      "00123",
+      "Zoë",
+      "0"
+    ]
+  ],
+  "schema": "csv-handoff/v2",
+  "source_sha256": "57cb6f15325966386162cb6347a2ce4ddc06d5e9fc63104849ae651a298cd686",
+  "tool_version": "0.2.0",
+  "xlsx_sha256": "cffc558ac9f82a860db4d0efa8597cb84c3a5942abd977d807f403aefc1b4fd7"
+}
