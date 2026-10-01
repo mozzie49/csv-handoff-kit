@@ -1,0 +1,43 @@
+{
+  "columns": [
+    {
+      "name": "Name",
+      "type": "text"
+    },
+    {
+      "name": "ID",
+      "type": "text"
+    },
+    {
+      "name": "Literal",
+      "type": "text"
+    },
+    {
+      "name": "Amount",
+      "type": "number"
+    }
+  ],
+  "dialect": {
+    "delimiter": ",",
+    "quotechar": "\""
+  },
+  "row_order": "fixed",
+  "rows": [
+    [
+      "张三",
+      "00123",
+      "=1+1",
+      "12.50"
+    ],
+    [
+      "陈一",
+      "12345678901234567890",
+      "@text",
+      "-3.75"
+    ]
+  ],
+  "schema": "csv-handoff/v1",
+  "source_sha256": "3b648a7c357441339b1cdc62494e12d9c22b54c1294e47c08dde7dbd6f6b4c0b",
+  "tool_version": "0.1.0",
+  "xlsx_sha256": "97a3cfc7c996ca85519ef49c56045a79d8e5f00cd47f96072365b25bda6aa277"
+}

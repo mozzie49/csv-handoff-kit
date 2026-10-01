@@ -1,0 +1,43 @@
+{
+  "columns": [
+    {
+      "name": "Literal",
+      "type": "text"
+    }
+  ],
+  "dialect": {
+    "delimiter": ",",
+    "quotechar": "\""
+  },
+  "row_order": "fixed",
+  "rows": [
+    [
+      "_x0041_"
+    ],
+    [
+      "_x000D_"
+    ],
+    [
+      "_x005F_"
+    ],
+    [
+      "line\rbreak\nend"
+    ],
+    [
+      "emoji 😀"
+    ],
+    [
+      "\t=1+1"
+    ],
+    [
+      "é"
+    ],
+    [
+      "é"
+    ]
+  ],
+  "schema": "csv-handoff/v1",
+  "source_sha256": "0e58f7a2282037d7798b84b1f923555b4e6193b6c66d70d5f6b9bf46acbbf0b1",
+  "tool_version": "0.1.0",
+  "xlsx_sha256": "0e69dcf5a83f78d9e83f0a6f10eb8bb170bda385d10e64e60c37dba44e1aeb38"
+}
