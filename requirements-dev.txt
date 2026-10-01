@@ -1,0 +1,2 @@
+# Optional independent reader used by tests. Not needed by the CLI.
+openpyxl==3.1.5
