@@ -1,0 +1,176 @@
+{
+  "cells": [
+    {
+      "cell": "A2",
+      "column": "Name",
+      "flags": [
+        "unicode_text"
+      ],
+      "type": "text",
+      "value": "张三"
+    },
+    {
+      "cell": "B2",
+      "column": "AccountID",
+      "flags": [
+        "leading_zero"
+      ],
+      "type": "text",
+      "value": "00123"
+    },
+    {
+      "cell": "C2",
+      "column": "LongID",
+      "flags": [
+        "long_integer"
+      ],
+      "type": "text",
+      "value": "12345678901234567890"
+    },
+    {
+      "cell": "D2",
+      "column": "Code",
+      "flags": [
+        "scientific_looking"
+      ],
+      "type": "text",
+      "value": "1E10"
+    },
+    {
+      "cell": "E2",
+      "column": "Gene",
+      "flags": [
+        "date_looking"
+      ],
+      "type": "text",
+      "value": "SEPT2"
+    },
+    {
+      "cell": "F2",
+      "column": "Literal",
+      "flags": [
+        "formula_looking"
+      ],
+      "type": "text",
+      "value": "=1+1"
+    },
+    {
+      "cell": "A3",
+      "column": "Name",
+      "flags": [
+        "unicode_text"
+      ],
+      "type": "text",
+      "value": "李四"
+    },
+    {
+      "cell": "B3",
+      "column": "AccountID",
+      "flags": [
+        "leading_zero"
+      ],
+      "type": "text",
+      "value": "00007"
+    },
+    {
+      "cell": "C3",
+      "column": "LongID",
+      "flags": [
+        "long_integer"
+      ],
+      "type": "text",
+      "value": "99999999999999999999"
+    },
+    {
+      "cell": "D3",
+      "column": "Code",
+      "flags": [
+        "scientific_looking"
+      ],
+      "type": "text",
+      "value": "2e3"
+    },
+    {
+      "cell": "E3",
+      "column": "Gene",
+      "flags": [
+        "date_looking"
+      ],
+      "type": "text",
+      "value": "03/04"
+    },
+    {
+      "cell": "F3",
+      "column": "Literal",
+      "flags": [
+        "formula_looking"
+      ],
+      "type": "text",
+      "value": "+SUM(A1)"
+    },
+    {
+      "cell": "G3",
+      "column": "Amount",
+      "flags": [
+        "formula_looking"
+      ],
+      "type": "number",
+      "value": "-3.75"
+    },
+    {
+      "cell": "A4",
+      "column": "Name",
+      "flags": [
+        "unicode_text"
+      ],
+      "type": "text",
+      "value": "陈一"
+    },
+    {
+      "cell": "B4",
+      "column": "AccountID",
+      "flags": [
+        "leading_zero"
+      ],
+      "type": "text",
+      "value": "00000"
+    },
+    {
+      "cell": "C4",
+      "column": "LongID",
+      "flags": [
+        "long_integer"
+      ],
+      "type": "text",
+      "value": "10000000000000000001"
+    },
+    {
+      "cell": "D4",
+      "column": "Code",
+      "flags": [
+        "ooxml_escape_looking"
+      ],
+      "type": "text",
+      "value": "_x0041_"
+    },
+    {
+      "cell": "E4",
+      "column": "Gene",
+      "flags": [
+        "date_looking"
+      ],
+      "type": "text",
+      "value": "2026-10-01"
+    },
+    {
+      "cell": "F4",
+      "column": "Literal",
+      "flags": [
+        "formula_looking"
+      ],
+      "type": "text",
+      "value": "@literal"
+    }
+  ],
+  "schema": "csv-handoff-risks/v1"
+}

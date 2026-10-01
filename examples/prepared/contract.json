@@ -1,0 +1,70 @@
+{
+  "columns": [
+    {
+      "name": "Name",
+      "type": "text"
+    },
+    {
+      "name": "AccountID",
+      "type": "text"
+    },
+    {
+      "name": "LongID",
+      "type": "text"
+    },
+    {
+      "name": "Code",
+      "type": "text"
+    },
+    {
+      "name": "Gene",
+      "type": "text"
+    },
+    {
+      "name": "Literal",
+      "type": "text"
+    },
+    {
+      "name": "Amount",
+      "type": "number"
+    }
+  ],
+  "dialect": {
+    "delimiter": ",",
+    "quotechar": "\""
+  },
+  "row_order": "fixed",
+  "rows": [
+    [
+      "张三",
+      "00123",
+      "12345678901234567890",
+      "1E10",
+      "SEPT2",
+      "=1+1",
+      "12.50"
+    ],
+    [
+      "李四",
+      "00007",
+      "99999999999999999999",
+      "2e3",
+      "03/04",
+      "+SUM(A1)",
+      "-3.75"
+    ],
+    [
+      "陈一",
+      "00000",
+      "10000000000000000001",
+      "_x0041_",
+      "2026-10-01",
+      "@literal",
+      "0"
+    ]
+  ],
+  "schema": "csv-handoff/v1",
+  "source_sha256": "1889a12a18112b804f6cdec0bd15d8d33c76332f30b6948b896e8b5d0b0ed11f",
+  "tool_version": "0.1.0",
+  "xlsx_sha256": "e7756c842b95d9af9b613975e6c90523680dd2cc6c62273d5db476609b6f131d"
+}
