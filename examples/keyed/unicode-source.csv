@@ -1,0 +1,12 @@
+Key,Label
+001,Leading zeros
+1,Different key
+A,Upper
+a,Lower
+ a,Leading space
+a ,Trailing space
+é,Composed
+é,Decomposed
+ ,Whitespace only
+中文🙂,Unicode
+=literal,Literal text
