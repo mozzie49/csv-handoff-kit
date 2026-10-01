@@ -1,0 +1,7 @@
+RETURN CHECK: differences
+
+1 observations. Differences may be intentional edits.
+
+Comparison uses fixed row order. Exact text and numeric decimal values are checked; XLSX storage types are checked.
+
+- A5: text_change; expected "line\rbreak\nend", returned "line\nbreak\nend"
