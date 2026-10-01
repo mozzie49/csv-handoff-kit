@@ -1,27 +1,36 @@
 {
   "project": "csv-handoff-kit",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "MIT",
   "date": "2026-10-01",
-  "scope": "Local original OSS experiment; no remote publication performed",
+  "base_commit": "ad79f744b1cebd9ef4dbd0cd2d3c104a0217e6d1",
+  "scope": "Optional exact unique-text-key return matching in the existing project; no remote writes performed",
   "runtime": "Python 3.10+; standard library only",
   "validation": {
     "command": "python -m unittest discover -s tests -v",
-    "passed": 49,
+    "passed": 87,
     "failed": 0,
     "skipped": 0,
+    "stdlib_only_command": "python -S -m unittest discover -s tests -v",
+    "stdlib_only_passed": 85,
+    "stdlib_only_skipped": 2,
     "python": "3.12.14",
     "independent_reader": "openpyxl 3.1.5",
     "skill_validation": "passed",
-    "standalone_copied_skill": "passed with python -I from unrelated cwd",
-    "app_roundtrip": "LibreOfficeDev 26.8.0.0.alpha0: standard fixture unchanged; one CR-to-LF edge detected",
+    "compile_check": "passed",
+    "copied_skill_smoke": "keyed pack and verify passed with python -I from unrelated cwd",
+    "old_reader": "v0.1.0 rejected keyed v2 contract with exit 2",
+    "independent_extension_review": "completed: three narrow defects corrected with six regressions; 150 CSV and 50 independent XLSX oracle cases passed",
+    "historical_app_roundtrip": "v0.1.0: LibreOfficeDev 26.8.0.0.alpha0 standard fixture unchanged; one CR-to-LF edge detected",
     "not_tested": [
       "Microsoft Excel",
       "stable LibreOffice",
-      "remote GitHub Actions"
-    ]
+      "keyed sorting in a desktop spreadsheet application",
+      "remote GitHub Actions for this extension"
+    ],
+    "application_escape_test": "LibreOfficeDev 26.8.0.0.alpha0 imports all seven literal keys exactly; its XLSX save changes several keys and correctly blocks on duplicate keys"
   },
-  "release_decision": "GO for the documented experimental supported subset; no general compatibility guarantee",
+  "release_decision": "Go for the documented experimental exact-text/keyed subset; no broad editor compatibility or security certification",
   "files": [
     {
       "path": ".github/workflows/test.yml",
@@ -40,13 +49,18 @@
     },
     {
       "path": "README.md",
-      "bytes": 10688,
-      "sha256": "1695190d8df5a5a9467c86119381c48e006cff75827e60e9db83aa7307467a89"
+      "bytes": 15718,
+      "sha256": "e32940aae372d494d159b0539354da3a372f7099b637814009f1df1ae74bac22"
     },
     {
       "path": "SKILL.md",
-      "bytes": 3783,
-      "sha256": "3f95a41f1cb31981b4630b6f397d7a74ff44eeb998b7cc09c6fc3d9342dcc3d1"
+      "bytes": 5255,
+      "sha256": "391a028c1ba73710cb83f271d76b6e0032f918a55a3b0c5e23777bcfe76ac320"
+    },
+    {
+      "path": "docs/keyed-matching.md",
+      "bytes": 6371,
+      "sha256": "7100c9770b8a0d6e02b16c3ddc5935a86647e8d4c57e5d0e3cd54de17ed7e74e"
     },
     {
       "path": "docs/preview.png",
@@ -60,13 +74,13 @@
     },
     {
       "path": "docs/test-results.txt",
-      "bytes": 5028,
-      "sha256": "637de3ee21fea3ae7cc2cd520ba70f518ca03802ce2b64ad996cc10a2518af85"
+      "bytes": 10022,
+      "sha256": "65d8ae0f4346db2659ce9490e0d5462e76ed591efcee56db0c16cc9506d46bbe"
     },
     {
       "path": "docs/validation.md",
-      "bytes": 5816,
-      "sha256": "06edc90facbd6ab803e6edb68c418076bc44fd608970de2188d022306aad6318"
+      "bytes": 12014,
+      "sha256": "ff15f6a12a88629adbb3860179c0f5fa32ed6c150207d4e466199c00fe9de688"
     },
     {
       "path": "examples/edited-check/diff.json",
@@ -77,6 +91,201 @@
       "path": "examples/edited-check/diff.txt",
       "bytes": 385,
       "sha256": "ddcdf15ab1f810a72c5d60d2224c5b52bd2fac6c028192b3799157f898fe867a"
+    },
+    {
+      "path": "examples/keyed/README.md",
+      "bytes": 4597,
+      "sha256": "9948940a119e712cd38fc81f76585925ea2e50e9df0fa674e51e94d9bc96494d"
+    },
+    {
+      "path": "examples/keyed/edited-check/diff.json",
+      "bytes": 2728,
+      "sha256": "ce2ef99f4ae54ba8f94a89a620f834b148be80d347970e3a2c8c1b8ce8e562d8"
+    },
+    {
+      "path": "examples/keyed/edited-check/diff.txt",
+      "bytes": 1041,
+      "sha256": "afdae481225bfe1a62d8422723c6c42bd9d0e1e34a836cfc0aca44136325bd74"
+    },
+    {
+      "path": "examples/keyed/escape-check/diff.json",
+      "bytes": 1440,
+      "sha256": "b0258966232404a48173334a5bf4d83c3129a0c03bf07e7611a702813a5a8cc8"
+    },
+    {
+      "path": "examples/keyed/escape-check/diff.txt",
+      "bytes": 647,
+      "sha256": "efb0b07c2ded106acdcca05055f790ce269e3c96410e0a834a396054401b694a"
+    },
+    {
+      "path": "examples/keyed/escape-libreoffice-import.csv",
+      "bytes": 173,
+      "sha256": "3cfd62f1b5e28481e219e9da1378a04d088ff06a49f3d33f8ed694d0708f4adb"
+    },
+    {
+      "path": "examples/keyed/escape-libreoffice-outcome.txt",
+      "bytes": 667,
+      "sha256": "cabe9089cafcfaba13d10c573629571a750e317fa05b9265432c7f7d560a53bc"
+    },
+    {
+      "path": "examples/keyed/escape-libreoffice-reopened.csv",
+      "bytes": 145,
+      "sha256": "1b2a0f00cd3dd4094f1330ab0bbe0cf836c291b08ed163e3a0ad86f5f0e896af"
+    },
+    {
+      "path": "examples/keyed/escape-libreoffice-saved.xlsx",
+      "bytes": 6115,
+      "sha256": "6c301b747eb443c7590c468795f41086eb78b64a93f5a554d2a8cff8144eff9c"
+    },
+    {
+      "path": "examples/keyed/escape-prepared/contract.json",
+      "bytes": 874,
+      "sha256": "1c53ab03c2fd65d61f65fa84f4ef15346c1702bb75b42f1ad8402737e82b5b9c"
+    },
+    {
+      "path": "examples/keyed/escape-prepared/handoff.xlsx",
+      "bytes": 2430,
+      "sha256": "8da1995e1271e6b0277782fdf38da6666472f7ce1faefc7483dbe9e83480c9eb"
+    },
+    {
+      "path": "examples/keyed/escape-prepared/receipt.txt",
+      "bytes": 1239,
+      "sha256": "6857bb07d6b723e2fb5f5aa63c0fbe8f9e64b319d16294727c10db76fff89504"
+    },
+    {
+      "path": "examples/keyed/escape-prepared/risks.json",
+      "bytes": 1213,
+      "sha256": "bb6079eee7fdf2aac3cf12d96b4f51cc41e8097a1e6f4a237a4bccb4d7db41e2"
+    },
+    {
+      "path": "examples/keyed/escape-source.csv",
+      "bytes": 181,
+      "sha256": "dc86310c23dafb896ee44800612d63d4d0cc4c02a2698e929b380ecbb839cee4"
+    },
+    {
+      "path": "examples/keyed/key-changed-check/diff.json",
+      "bytes": 2106,
+      "sha256": "44efb83e524c28274e69e94a87271213ae7131a7bde0d92433299c1453081dab"
+    },
+    {
+      "path": "examples/keyed/key-changed-check/diff.txt",
+      "bytes": 891,
+      "sha256": "d10d01b6eea251b6e128e2725003876aa0daa766acec91369493fbd67bafa4f7"
+    },
+    {
+      "path": "examples/keyed/openpyxl-check/diff.json",
+      "bytes": 2714,
+      "sha256": "50554d01cd15b43448291dc9e7b57067a46de58ad220e600d6e78760ceba4c46"
+    },
+    {
+      "path": "examples/keyed/openpyxl-check/diff.txt",
+      "bytes": 1041,
+      "sha256": "afdae481225bfe1a62d8422723c6c42bd9d0e1e34a836cfc0aca44136325bd74"
+    },
+    {
+      "path": "examples/keyed/openpyxl-returned.xlsx",
+      "bytes": 4958,
+      "sha256": "91fddaa25eee0d9a4c4533ace45f6eab3cfc77fed8664624c705b090d45240d4"
+    },
+    {
+      "path": "examples/keyed/prepared/contract.json",
+      "bytes": 849,
+      "sha256": "0ce6b8e742c2d548e925a36762fabb46d54e910976c3362f854771e5fcfd5fd1"
+    },
+    {
+      "path": "examples/keyed/prepared/handoff.xlsx",
+      "bytes": 2459,
+      "sha256": "cffc558ac9f82a860db4d0efa8597cb84c3a5942abd977d807f403aefc1b4fd7"
+    },
+    {
+      "path": "examples/keyed/prepared/receipt.txt",
+      "bytes": 1297,
+      "sha256": "d336d342f3267f5c6e5db05242fbb45e7fef9504d6fcb99f3c6f30f1ba22476f"
+    },
+    {
+      "path": "examples/keyed/prepared/risks.json",
+      "bytes": 1139,
+      "sha256": "54267f2f9076330e656c990c1680d869f2ebdd366c3bb6d9d48624dd7a9ca255"
+    },
+    {
+      "path": "examples/keyed/returned-duplicate.csv",
+      "bytes": 117,
+      "sha256": "6d41a9026b396b2b0cec788a09e8c47923dba0e5d743b41ab74c2a9f5fa9d8a0"
+    },
+    {
+      "path": "examples/keyed/returned-edited-added-removed.csv",
+      "bytes": 97,
+      "sha256": "a13f4035999edf8694e4ce5236af28137276f16b6703db0f15585a0f1b34aae8"
+    },
+    {
+      "path": "examples/keyed/returned-empty.csv",
+      "bytes": 89,
+      "sha256": "c5d036b52f4ca65bc0340507361bf67bc0128219eb9be59c8b9aab86172ce2bf"
+    },
+    {
+      "path": "examples/keyed/returned-key-changed.csv",
+      "bytes": 92,
+      "sha256": "4dfce953587cb5243bf5503d76fef39dc8820ac556e7e73d48cf3e58ee286501"
+    },
+    {
+      "path": "examples/keyed/returned-sorted.csv",
+      "bytes": 94,
+      "sha256": "ecfb8e83e3b78555a4fadae8ac3829096bc4547f20db1808f5b747248bc013b3"
+    },
+    {
+      "path": "examples/keyed/sorted-check/diff.json",
+      "bytes": 1696,
+      "sha256": "0e285f7a9fa1317f4225cd448585d09fc9c7cd23eb8287cdf87adef5cb1e977f"
+    },
+    {
+      "path": "examples/keyed/sorted-check/diff.txt",
+      "bytes": 735,
+      "sha256": "78ffa6147ffdad44527ab04bce508a958b33b3fe5acaa6d4d6bcbca8218370fe"
+    },
+    {
+      "path": "examples/keyed/source.csv",
+      "bytes": 94,
+      "sha256": "57cb6f15325966386162cb6347a2ce4ddc06d5e9fc63104849ae651a298cd686"
+    },
+    {
+      "path": "examples/keyed/unicode-prepared/contract.json",
+      "bytes": 1002,
+      "sha256": "9f31b8418f47974d6365bc661a511ee32df562b056093d659ee1622844b2b449"
+    },
+    {
+      "path": "examples/keyed/unicode-prepared/handoff.xlsx",
+      "bytes": 2549,
+      "sha256": "079fcf1c69192e1585a47ea8377d77fc38fa48437265daffb7e0c70d7c13d13d"
+    },
+    {
+      "path": "examples/keyed/unicode-prepared/receipt.txt",
+      "bytes": 1240,
+      "sha256": "b7c898578f0cdafe24cfcc54d75c602556585dbdcd681bbd1f486608096a8d5c"
+    },
+    {
+      "path": "examples/keyed/unicode-prepared/risks.json",
+      "bytes": 1247,
+      "sha256": "c339ee766f7775210fd01704985542e9c466b62c3fc57d10b397387942778f0e"
+    },
+    {
+      "path": "examples/keyed/unicode-sorted-check/diff.json",
+      "bytes": 2454,
+      "sha256": "313b567d325005efe6d8033a5f3207e58e9931358cfcde42ca71bcec9ab30f5a"
+    },
+    {
+      "path": "examples/keyed/unicode-sorted-check/diff.txt",
+      "bytes": 929,
+      "sha256": "8bcb2e6556c3593da94e2c6df2abcfad7e7d14b3f923f85d715034c3cbc650e1"
+    },
+    {
+      "path": "examples/keyed/unicode-sorted.csv",
+      "bytes": 193,
+      "sha256": "ef9c0a989b5a234cdc87ccddad490fb2eefd6007304dd44bd9d3242c7d44da5e"
+    },
+    {
+      "path": "examples/keyed/unicode-source.csv",
+      "bytes": 193,
+      "sha256": "d56e274738c78f643df7585fd13f34c1586e3360b00d9de1939bc76442034d7c"
     },
     {
       "path": "examples/libreoffice-dev/contract.json",
@@ -175,13 +384,18 @@
     },
     {
       "path": "scripts/csv_handoff.py",
-      "bytes": 35919,
-      "sha256": "5afd3a50d19c419e7d2768eb550eefb2a11f1d47489e3a960cec649ff1719e7c"
+      "bytes": 47427,
+      "sha256": "d7e24e97f2bd9d36bae74b8c5407e27b9832cecc5f77de52c57b61b46bb54c19"
     },
     {
       "path": "tests/test_handoff.py",
       "bytes": 21022,
       "sha256": "c28f2d216989c7a7d0bc41d1f992199b8ccd0e4b015afcaf145486e6bea57697"
+    },
+    {
+      "path": "tests/test_keyed.py",
+      "bytes": 24377,
+      "sha256": "9e2ecd860ae0a954344272260116b737c944174aff5f917c5411f9e0abce1f0b"
     }
   ]
 }

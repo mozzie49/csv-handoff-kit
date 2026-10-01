@@ -47,8 +47,46 @@ test_xml_depth_and_node_limits (test_handoff.HandoffTests.test_xml_depth_and_nod
 test_zip_entry_limit (test_handoff.HandoffTests.test_zip_entry_limit) ... ok
 test_zip_expansion_limit (test_handoff.HandoffTests.test_zip_expansion_limit) ... ok
 test_zip_ratio_limit (test_handoff.HandoffTests.test_zip_ratio_limit) ... ok
+test_added_records_get_numeric_and_type_contract_checks (test_keyed.KeyedTests.test_added_records_get_numeric_and_type_contract_checks) ... ok
+test_baseline_and_returned_hashes_identify_exact_bytes (test_keyed.KeyedTests.test_baseline_and_returned_hashes_identify_exact_bytes) ... ok
+test_blank_spreadsheet_row_is_not_silently_ignored (test_keyed.KeyedTests.test_blank_spreadsheet_row_is_not_silently_ignored) ... ok
+test_cli_key_flags_and_exit_codes (test_keyed.KeyedTests.test_cli_key_flags_and_exit_codes) ... ok
+test_contract_duplicate_empty_and_wrong_type_keys_rejected (test_keyed.KeyedTests.test_contract_duplicate_empty_and_wrong_type_keys_rejected) ... ok
+test_contract_matching_mode_cannot_be_silently_changed (test_keyed.KeyedTests.test_contract_matching_mode_cannot_be_silently_changed) ... ok
+test_default_pack_is_still_v1_and_positional (test_keyed.KeyedTests.test_default_pack_is_still_v1_and_positional) ... ok
+test_each_nontext_key_storage_rejected (test_keyed.KeyedTests.test_each_nontext_key_storage_rejected) ... ok
+test_exact_numeric_precision_rules_are_retained (test_keyed.KeyedTests.test_exact_numeric_precision_rules_are_retained) ... ok
+test_exact_unicode_case_whitespace_and_tuple_boundaries (test_keyed.KeyedTests.test_exact_unicode_case_whitespace_and_tuple_boundaries) ... ok
+test_formula_and_active_content_still_block_before_key_matching (test_keyed.KeyedTests.test_formula_and_active_content_still_block_before_key_matching) ... ok
+test_header_only_all_added_and_all_removed (test_keyed.KeyedTests.test_header_only_all_added_and_all_removed) ... ok
+test_header_storage_must_be_text (test_keyed.KeyedTests.test_header_storage_must_be_text) ... ok
+test_independent_openpyxl_reorders_edits_and_preserves_text_keys (test_keyed.KeyedTests.test_independent_openpyxl_reorders_edits_and_preserves_text_keys) ... ok
+test_key_contract_explicit_version_and_selection (test_keyed.KeyedTests.test_key_contract_explicit_version_and_selection) ... ok
+test_keyed_outputs_deterministic (test_keyed.KeyedTests.test_keyed_outputs_deterministic) ... ok
+test_literal_escape_decoding_is_single_pass (test_keyed.KeyedTests.test_literal_escape_decoding_is_single_pass) ... ok
+test_long_keys_are_not_repeated_per_cell_in_json (test_keyed.KeyedTests.test_long_keys_are_not_repeated_per_cell_in_json) ... ok
+test_missing_relationship_target_is_rejected_cleanly (test_keyed.KeyedTests.test_missing_relationship_target_is_rejected_cleanly) ... ok
+test_missing_repeated_unknown_or_malformed_key_columns_rejected (test_keyed.KeyedTests.test_missing_repeated_unknown_or_malformed_key_columns_rejected) ... ok
+test_modified_key_is_removed_and_added_without_inferred_intent (test_keyed.KeyedTests.test_modified_key_is_removed_and_added_without_inferred_intent) ... ok
+test_nonkey_storage_change_reported (test_keyed.KeyedTests.test_nonkey_storage_change_reported) ... ok
+test_numeric_key_storage_is_blocking_even_if_spelling_matches (test_keyed.KeyedTests.test_numeric_key_storage_is_blocking_even_if_spelling_matches) ... ok
+test_numeric_representation_and_value_after_reorder (test_keyed.KeyedTests.test_numeric_representation_and_value_after_reorder) ... ok
+test_old_v1_examples_keep_behavior_and_report_schema (test_keyed.KeyedTests.test_old_v1_examples_keep_behavior_and_report_schema) ... ok
+test_overlapping_and_repeated_escape_literals_survive_fixed_and_keyed_pack (test_keyed.KeyedTests.test_overlapping_and_repeated_escape_literals_survive_fixed_and_keyed_pack) ... ok
+test_pack_invalid_key_selection_rejected (test_keyed.KeyedTests.test_pack_invalid_key_selection_rejected) ... ok
+test_published_escape_fixture_and_detected_application_save_edge (test_keyed.KeyedTests.test_published_escape_fixture_and_detected_application_save_edge) ... ok
+test_published_fictional_keyed_fixtures (test_keyed.KeyedTests.test_published_fictional_keyed_fixtures) ... ok
+test_reordered_edited_added_removed (test_keyed.KeyedTests.test_reordered_edited_added_removed) ... ok
+test_reordered_or_changed_or_missing_headers_block_matching (test_keyed.KeyedTests.test_reordered_or_changed_or_missing_headers_block_matching) ... ok
+test_resource_limits_remain_in_force (test_keyed.KeyedTests.test_resource_limits_remain_in_force) ... ok
+test_return_duplicate_or_empty_key_rejected (test_keyed.KeyedTests.test_return_duplicate_or_empty_key_rejected) ... ok
+test_rich_text_split_escape_like_key_stays_literal (test_keyed.KeyedTests.test_rich_text_split_escape_like_key_stays_literal) ... ok
+test_sorted_only_content_unchanged_and_movement_separate (test_keyed.KeyedTests.test_sorted_only_content_unchanged_and_movement_separate) ... ok
+test_source_duplicate_or_empty_key_rejected_before_output (test_keyed.KeyedTests.test_source_duplicate_or_empty_key_rejected_before_output) ... ok
+test_unchanged_csv_and_xlsx (test_keyed.KeyedTests.test_unchanged_csv_and_xlsx) ... ok
+test_unsupported_data_rows_and_cells_cannot_be_ignored (test_keyed.KeyedTests.test_unsupported_data_rows_and_cells_cannot_be_ignored) ... ok
 
 ----------------------------------------------------------------------
-Ran 49 tests in 0.773s
+Ran 87 tests in 1.744s
 
 OK
