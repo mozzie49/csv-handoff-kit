@@ -1,0 +1,103 @@
+{
+  "comparison": "exact unique text-key tuples; exact text; decimal numeric values; XLSX storage types",
+  "content_status": "unchanged",
+  "contract_sha256": "9f31b8418f47974d6365bc661a511ee32df562b056093d659ee1622844b2b449",
+  "differences": [],
+  "key_columns": [
+    "Key"
+  ],
+  "notes": [
+    "Differences may be intentional edits; this report does not infer corruption.",
+    "Keys are exact ordered text tuples. No trimming, case folding, Unicode normalization, or fuzzy matching.",
+    "Modified keys are removed and added records; intent is not inferred.",
+    "Movement means a matched record has a different worksheet row number, including shifts caused by insertions/deletions.",
+    "Changed counts matched records with any cell observation; type_changed and representation_changed are overlapping subsets. Movement is separate.",
+    "No formula evaluation, formatting comparison, identity verification, or recovery of lost data.",
+    "This report includes baseline and returned values and keys; treat it as sensitive when the sources are sensitive."
+  ],
+  "record_changes": [],
+  "record_summary": {
+    "added": 0,
+    "changed": 0,
+    "moved": 10,
+    "removed": 0,
+    "representation_changed": 0,
+    "type_changed": 0,
+    "unchanged": 11
+  },
+  "returned_sha256": "ef9c0a989b5a234cdc87ccddad490fb2eefd6007304dd44bd9d3242c7d44da5e",
+  "row_movements": [
+    {
+      "baseline_row": 2,
+      "key": [
+        "001"
+      ],
+      "returned_row": 12
+    },
+    {
+      "baseline_row": 3,
+      "key": [
+        "1"
+      ],
+      "returned_row": 11
+    },
+    {
+      "baseline_row": 4,
+      "key": [
+        "A"
+      ],
+      "returned_row": 10
+    },
+    {
+      "baseline_row": 5,
+      "key": [
+        "a"
+      ],
+      "returned_row": 9
+    },
+    {
+      "baseline_row": 6,
+      "key": [
+        " a"
+      ],
+      "returned_row": 8
+    },
+    {
+      "baseline_row": 8,
+      "key": [
+        "é"
+      ],
+      "returned_row": 6
+    },
+    {
+      "baseline_row": 9,
+      "key": [
+        "é"
+      ],
+      "returned_row": 5
+    },
+    {
+      "baseline_row": 10,
+      "key": [
+        " "
+      ],
+      "returned_row": 4
+    },
+    {
+      "baseline_row": 11,
+      "key": [
+        "中文🙂"
+      ],
+      "returned_row": 3
+    },
+    {
+      "baseline_row": 12,
+      "key": [
+        "=literal"
+      ],
+      "returned_row": 2
+    }
+  ],
+  "schema": "csv-handoff-diff/v2",
+  "status": "differences"
+}
