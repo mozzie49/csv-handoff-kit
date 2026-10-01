@@ -1,0 +1,35 @@
+{
+  "comparison": "fixed-row-order; exact text; decimal numeric values; XLSX storage types",
+  "contract_sha256": "dcc51caa8d1d0c0b746be71b528a3cc704b349cd035d4afb9b40fdfe7128bb90",
+  "differences": [
+    {
+      "actual": "123",
+      "cell": "B2",
+      "column": "AccountID",
+      "expected": "00123",
+      "kind": "text_change"
+    },
+    {
+      "actual": "12.5",
+      "cell": "G2",
+      "column": "Amount",
+      "expected": "12.50",
+      "kind": "numeric_representation_change",
+      "values_equal": true
+    },
+    {
+      "actual": "-4.00",
+      "cell": "G3",
+      "column": "Amount",
+      "expected": "-3.75",
+      "kind": "numeric_value_change"
+    }
+  ],
+  "notes": [
+    "Differences may be intentional edits; this report does not infer corruption.",
+    "No formula evaluation, formatting comparison, row matching, or recovery of lost data."
+  ],
+  "returned_sha256": "48d2d984414809aeb818780b1fa0cbc52259f2437911aefa60577b001eedb390",
+  "schema": "csv-handoff-diff/v1",
+  "status": "differences"
+}

@@ -1,0 +1,9 @@
+RETURN CHECK: differences
+
+3 observations. Differences may be intentional edits.
+
+Comparison uses fixed row order. Exact text and numeric decimal values are checked; XLSX storage types are checked.
+
+- B2: text_change; expected "00123", returned "123"
+- G2: numeric_representation_change; expected "12.50", returned "12.5"
+- G3: numeric_value_change; expected "-3.75", returned "-4.00"
