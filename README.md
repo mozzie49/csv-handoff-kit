@@ -2,7 +2,7 @@
 
 **A column contract before the handoff. A cell-level diff when it comes back.**
 
-A small local experiment for sharing a CSV as an XLSX without guessing which identifiers are numbers. All columns default to literal text; only explicitly named columns become numeric. Keep the baseline contract, then check the returned CSV or XLSX in fixed row order.
+A small local experiment for sharing a CSV as an XLSX without guessing which identifiers are numbers. All columns default to literal text; only explicitly named columns become numeric. Keep the baseline contract, then check the returned CSV or XLSX in fixed row order, or explicitly opt into exact unique-key matching when rows may be sorted.
 
 Python 3.10+ · standard library only · MIT · no account, network calls, telemetry, or uploads
 
@@ -26,7 +26,7 @@ The example has Chinese names, `00123`, a 20-digit ID, `1E10`, `SEPT2`, literal 
 The bundle contains:
 
 - `handoff.xlsx`: one `Data` sheet; text cells use actual string storage and Text format, not a leading apostrophe; selected numeric cells use numeric storage
-- `contract.json`: column types, original field values, fixed-row-order baseline, dialect, and SHA-256 references
+- `contract.json`: column types, original field values, baseline values, fixed-row-order or explicit key matching, dialect, and SHA-256 references
 - `risks.json`: per-cell, informational flags for leading zeros, long integers, scientific/date/formula-looking strings, whitespace, Unicode, and OOXML-escape-looking text
 - `receipt.txt`: readable column choices and handoff instructions
 
@@ -47,9 +47,32 @@ A returned `.csv` uses the original UTF-8 encoding/dialect contract. A returned 
 | 1 | Differences found; they may be intentional edits |
 | 2 | Invalid, unsafe, unsupported, or over-limit input; comparison did not complete |
 
-Text is compared by exact decoded field value. XLSX storage types are checked too. Numbers compare by decimal value: CSV `12.50` → `12.5` is a separate **representation change, values equal**, whereas `12.50` → `20.25` is a value change. Missing/empty spreadsheet cells are equivalent to empty fields; an empty numeric field remains empty, never zero. Sorting, deleting, or inserting rows yields positional differences. Formatting is not compared.
+Text is compared by exact decoded field value. XLSX storage types are checked too. Numbers compare by decimal value: CSV `12.50` → `12.5` is a separate **representation change, values equal**, whereas `12.50` → `20.25` is a value change. Missing/empty spreadsheet cells are equivalent to empty fields; an empty numeric field remains empty, never zero. By default, sorting, deleting, or inserting rows yields positional differences. Optional key matching below reports these as records and row movements. Formatting is not compared.
 
 **Returned formulas are rejected**, including ordinary added `SUM` formulas and formulas with cached results. Return a separate literal-values-only copy. Macros, external relationships, embeddings, defined names, merged cells, and unsupported package parts are also rejected. This is deliberately narrower than a general spreadsheet reader.
+
+## Match returned rows after sorting (optional)
+
+Select the text key column(s) **before the handoff**. No identifier is guessed. Repeat `--key` for an ordered composite key:
+
+```sh
+python scripts/csv_handoff.py pack examples/keyed/source.csv \
+  --delimiter ',' --key Region --key AccountID --number Amount \
+  --output-dir keyed-handoff
+python scripts/csv_handoff.py verify examples/keyed/returned-sorted.csv \
+  --contract keyed-handoff/contract.json --output-dir sorted-check
+```
+
+The sorted-only example exits **1** because row positions changed, but reports `content_status: unchanged`, zero changed records, and two separate row movements. For sorting plus edits, additions, and removals, replace the returned path with `examples/keyed/returned-edited-added-removed.csv`. [Inspect the fictional receipts and rejected-input examples](examples/keyed/README.md).
+
+- Keys must use text columns. Each component must be nonempty, and the full tuple must be unique on **both** sides. Duplicate/empty keys stop the entire check with exit 2; no ambiguous rows are ignored
+- Leading zeros, case, whitespace, and Unicode code points are exact. `00123` is different from `123`; `A` from `a`; composed and decomposed accents are different. Whitespace-only text is nonempty and retained
+- Returned XLSX keys must still use string storage. A numeric, blank, date, boolean, or error key blocks matching rather than being coerced. Original headers and column order must be unchanged
+- Added/removed records and matched cell/type changes are distinct from `row_movements`. Movement means a different worksheet row number, including shifts from insertions/deletions. A modified key is removed + added; intent is never inferred
+- `record_summary.changed` counts matched records with any cell observation; type/representation counts overlap it. Added records receive numeric/type contract checks too. CSV has no native storage-type information
+- Keys are bound into a `csv-handoff/v2` contract and `csv-handoff-diff/v2` report. Existing v1 contracts remain positional. Older tool versions reject v2 rather than silently comparing by position; `verify` cannot override the chosen mode
+
+Keep the original trusted contract. This is not fuzzy reconciliation, a database merge, or proof of record identity. Details and report fields: [keyed matching contract](docs/keyed-matching.md).
 
 ## Numeric contract
 
@@ -68,17 +91,19 @@ This is a conservative decimal round-trip rule, not arbitrary-precision spreadsh
 - The risk labels are heuristics and are not a complete detector of application behavior
 - Exactness covers decoded field values, not original CSV bytes, quote choices, row terminators, formatting, authorship, or editing intent
 - Raw CSV reopened in spreadsheet software can still be coerced or interpreted as formulas. The generated, explicitly typed XLSX is the supported handoff
-- XLSX structure and independent openpyxl 3.1.5 readback of the main ID/formula/numeric fixtures are tested. One **LibreOfficeDev 26.8.0.0.alpha0** headless XLSX save preserved the standard fixture; a separate CR→LF normalization was detected. **Microsoft Excel and stable LibreOffice releases have not been tested**
+- XLSX structure and independent openpyxl 3.1.5 readback of the main ID/formula/numeric fixtures are tested. One **LibreOfficeDev 26.8.0.0.alpha0** headless XLSX save preserved the standard fixture; a separate CR→LF normalization was detected. In v0.2.0, an escape-like-key fixture imports correctly in that development build, but XLSX save changes some literals; the verifier blocks the resulting duplicate keys (see [validation](docs/validation.md)). **Microsoft Excel and stable LibreOffice releases have not been tested**
 
 ## Use as a skill
 
-Point an agent at [`SKILL.md`](SKILL.md) and this repository directory. It resolves the script relative to the skill and runs locally. No global installation is needed. The skill requires an explicit numeric-column choice, preserves the all-text default, and distinguishes rejection from a completed return check.
+Point an agent at [`SKILL.md`](SKILL.md) and this repository directory. It resolves the script relative to the skill and runs locally. No global installation is needed. The skill requires explicit numeric-column and optional key-column choices, preserves the all-text/fixed-order defaults, and distinguishes rejection from a completed return check.
 
 ## Why this experiment?
 
 Real export workflows describe these hazards: [Expensify documents scientific notation and lost leading zeros](https://github.com/Expensify/App/blob/main/docs/articles/new-expensify/reports-and-expenses/How-to-Export-Expenses.md); [AWS's billing-adjustment sample warns about spreadsheet-mangled IDs](https://github.com/aws-samples/aws-marketplace-reference-code/blob/main/applications/billing-adjustments/README.md); [Microsoft explains automatic conversions and its 15-digit numeric precision limit](https://support.microsoft.com/en-us/excel/keeping-leading-zeros-and-large-numbers).
 
 Conversion itself is established. [FileGizmo](https://filegizmo.com/csv/csv-to-excel/), [Looty](https://lootytools.com/guides/preserve-leading-zeros-csv-to-excel), and [csv-data-tools](https://github.com/lyrasis/csv-data-tools/) are existing alternatives. This experiment focuses on the **explicit column contract + per-cell risk receipt + returned-file diff** workflow. Demand for that combination is a hypothesis, not demonstrated adoption or a claim of unique conversion technology.
+
+Keyed CSV comparison is also established: [simonw/csv-diff](https://github.com/simonw/csv-diff) and [agardiner/csv-diff-report](https://github.com/agardiner/csv-diff-report) are alternatives. Historical csv-diff issues about [duplicate keys](https://github.com/simonw/csv-diff/issues/31) and [multiple key fields](https://github.com/simonw/csv-diff/issues/23) illustrate correctness concerns, not demand from this project's users. The incremental workflow here is an explicit typed handoff followed by verification after row sorting. There is no novelty or proven-adoption claim.
 
 ## Tests and license
 
@@ -90,7 +115,7 @@ python -m venv .venv
 .venv/bin/python -m unittest discover -s tests -v
 ```
 
-Without openpyxl, the independent-reader test is visibly skipped; the stdlib tests still run. Test coverage and known limits are recorded in [`docs/validation.md`](docs/validation.md). Code, skill text, fixtures, workbook template, and illustrated preview were written for this project and are under [MIT](LICENSE). Development, documentation, and validation were AI-assisted; the test record states what was actually checked and does not imply manual authoring or comprehensive application compatibility. No vendor documentation or third-party templates are bundled. Python is provided separately under its own license; optional test dependencies keep their upstream licenses (openpyxl: MIT; et-xmlfile: MIT).
+Without openpyxl, the two independent-reader tests are visibly skipped; the stdlib tests still run. Test coverage and known limits are recorded in [`docs/validation.md`](docs/validation.md). Code, skill text, fixtures, workbook template, and illustrated preview were written for this project and are under [MIT](LICENSE). Development, documentation, and validation were AI-assisted; the test record states what was actually checked and does not imply manual authoring or comprehensive application compatibility. No vendor documentation or third-party templates are bundled. Python is provided separately under its own license; optional test dependencies keep their upstream licenses (openpyxl: MIT; et-xmlfile: MIT).
 
 ---
 
@@ -101,11 +126,24 @@ Without openpyxl, the independent-reader test is visibly skipped; the stdlib tes
 这是一个本地运行的小型实验，不需要账号、联网或全局安装。默认把所有列写成真正的文本单元格；只有通过 `--number Amount` 明确指定的列才转成数字。中文、前导零、20 位编号、`1E10`、`SEPT2` 和 `=1+1` 都可保留为文本。它不是通用表格编辑器，也不能恢复已经丢失的数字。
 
 - 按上面的示例运行 `pack`，生成工作簿、列约定、逐单元格风险提示和可读回执
-- 保留原始 `contract.json`，收到文件后运行 `verify`。按原行序比较，不自动匹配或重排记录
+- 保留原始 `contract.json`，收到文件后运行 `verify`。默认按原行序比较；需要允许排序时，必须在交接前用 `--key` 明确选择文本键列
 - 退出码 `0` 表示约定范围内一致，`1` 表示有差异，`2` 表示拒绝或未完成检查。差异也可能是有意修改，不应一概称为损坏
 - 数字 `12.50` 变成 `12.5` 会标明“表示方式变化、数值相等”。文本列按实际字符比较
 - 返回的 XLSX 必须只有名为 `Data` 的工作表且没有公式；新增 `SUM` 也会被拒绝，不能用缓存结果代替验证
 - 约定、风险报告和差异文件含原始数据，真实业务使用时应按敏感文件保管。本工具不自动上传，也不收集遥测
 - 支持明确分隔符的 UTF-8 CSV，最多 10 MiB、10,000 行、256 列、250,000 个单元格；完整边界见英文说明
 - 生成的 XLSX 使用明确的字符串类型。直接把 CSV 再次交给表格软件打开，仍可能发生类型或公式推断
-- 已验证 OOXML、独立读取器和一次 LibreOfficeDev 26.8.0.0.alpha0 回存；另一个例子中的回车变换被正确报告。Microsoft Excel 和稳定版 LibreOffice 尚未测试
+- 已验证 OOXML、独立读取器和一次 LibreOfficeDev 26.8.0.0.alpha0 回存；另一个例子中的回车变换被正确报告。v0.2.0 的转义外观键能正确导入，但该开发版 XLSX 回存会改变部分字面文本；验证器正确阻止由此产生的重复键。Microsoft Excel 和稳定版 LibreOffice 尚未测试
+
+### 可选：排序后按精确键匹配
+
+上面的新例子使用 `--key Region --key AccountID`，把两列组成有顺序的复合键。默认模式和旧版 v1 约定仍按行序比较；新键模式采用 v2，旧工具会拒绝而不会悄悄忽略匹配规则。
+
+- 原表和返回表的每个键分量都必须是非空文本，完整复合键不能重复。任何空键、重复键或 XLSX 数值型键都会中止检查，退出码为 `2`
+- 不去空格、不转换大小写、不统一 Unicode。`00123`、`123`、`A`、`a` 是不同键；只有空格的文本不算空串
+- 表头名称和列顺序必须保持不变。修改键值只报告“删除 + 新增”，不猜测是不是同一个人或记录
+- 新增、删除、单元格值/类型变化与行位置变化分别报告。仅排序时内容显示 `unchanged`，但行位置有差异，所以整体退出码仍为 `1`
+- 行移动指工作表行号发生变化，也包括插入/删除造成的位置偏移；不代表推断了编辑操作。`changed` 是有单元格观察项的匹配记录数，类型和数字表示变化是可重叠子集
+- 合同、回执、差异文件中的键和数据也可能敏感，请保留可信原件。完整示例见 [`examples/keyed/`](examples/keyed/README.md)
+
+按键比较已有成熟工具。本次扩展只改善“明确列类型交接 → 返回后排序核对”的组合流程，不声称首创或已有用户需求验证。
