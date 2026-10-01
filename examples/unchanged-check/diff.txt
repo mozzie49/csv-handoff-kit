@@ -1,0 +1,6 @@
+RETURN CHECK: unchanged
+
+0 observations. Differences may be intentional edits.
+
+Comparison uses fixed row order. Exact text and numeric decimal values are checked; XLSX storage types are checked.
+

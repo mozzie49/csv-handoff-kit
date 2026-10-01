@@ -1,0 +1,12 @@
+{
+  "comparison": "fixed-row-order; exact text; decimal numeric values; XLSX storage types",
+  "contract_sha256": "dcc51caa8d1d0c0b746be71b528a3cc704b349cd035d4afb9b40fdfe7128bb90",
+  "differences": [],
+  "notes": [
+    "Differences may be intentional edits; this report does not infer corruption.",
+    "No formula evaluation, formatting comparison, row matching, or recovery of lost data."
+  ],
+  "returned_sha256": "e7756c842b95d9af9b613975e6c90523680dd2cc6c62273d5db476609b6f131d",
+  "schema": "csv-handoff-diff/v1",
+  "status": "unchanged"
+}
