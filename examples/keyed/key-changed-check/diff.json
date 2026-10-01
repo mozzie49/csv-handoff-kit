@@ -1,0 +1,72 @@
+{
+  "comparison": "exact unique text-key tuples; exact text; decimal numeric values; XLSX storage types",
+  "content_status": "differences",
+  "contract_sha256": "0ce6b8e742c2d548e925a36762fabb46d54e910976c3362f854771e5fcfd5fd1",
+  "differences": [
+    {
+      "actual": null,
+      "baseline_row": 2,
+      "expected": [
+        "CN",
+        "00123",
+        "张三",
+        "12.50"
+      ],
+      "key": [
+        "CN",
+        "00123"
+      ],
+      "kind": "record_removed",
+      "returned_row": null
+    },
+    {
+      "actual": [
+        "CN",
+        "123",
+        "张三",
+        "12.50"
+      ],
+      "actual_types": [
+        "csv_text",
+        "csv_text",
+        "csv_text",
+        "csv_text"
+      ],
+      "baseline_row": null,
+      "expected": null,
+      "key": [
+        "CN",
+        "123"
+      ],
+      "kind": "record_added",
+      "returned_row": 2
+    }
+  ],
+  "key_columns": [
+    "Region",
+    "AccountID"
+  ],
+  "notes": [
+    "Differences may be intentional edits; this report does not infer corruption.",
+    "Keys are exact ordered text tuples. No trimming, case folding, Unicode normalization, or fuzzy matching.",
+    "Modified keys are removed and added records; intent is not inferred.",
+    "Movement means a matched record has a different worksheet row number, including shifts caused by insertions/deletions.",
+    "Changed counts matched records with any cell observation; type_changed and representation_changed are overlapping subsets. Movement is separate.",
+    "No formula evaluation, formatting comparison, identity verification, or recovery of lost data.",
+    "This report includes baseline and returned values and keys; treat it as sensitive when the sources are sensitive."
+  ],
+  "record_changes": [],
+  "record_summary": {
+    "added": 1,
+    "changed": 0,
+    "moved": 0,
+    "removed": 1,
+    "representation_changed": 0,
+    "type_changed": 0,
+    "unchanged": 2
+  },
+  "returned_sha256": "4dfce953587cb5243bf5503d76fef39dc8820ac556e7e73d48cf3e58ee286501",
+  "row_movements": [],
+  "schema": "csv-handoff-diff/v2",
+  "status": "differences"
+}

@@ -1,0 +1,9 @@
+LibreOfficeDev 26.8.0.0.alpha0, build 2c87e51eeaa2b413ff4ae097b2705eea1995d8e5
+
+Generated XLSX import followed by CSV export: all seven original escape-like keys preserved exactly.
+Generated XLSX import followed by XLSX save: several literal keys changed in sharedStrings.xml.
+Reopening that saved XLSX in the same LibreOfficeDev build and exporting CSV confirms the changed values.
+Verification of the saved XLSX: exit 2, no comparison files.
+Diagnostic: Returned duplicate key at rows 2 and 7; key matching requires unique full tuples
+
+This is a detected application-save edge, not an unchanged return, and is not an Excel or stable LibreOffice compatibility test.

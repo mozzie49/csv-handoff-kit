@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Local, bounded CSV → typed XLSX handoff and fixed-order return verification.
+"""Local, bounded CSV → typed XLSX handoff and fixed-order or exact-key return checks.
 
 Python 3.10+, standard library only. No input is evaluated, executed, or fetched.
 """
@@ -20,7 +20,7 @@ from pathlib import Path
 from xml.etree import ElementTree as ET
 from xml.sax.saxutils import escape
 
-VERSION = '0.1.0'
+VERSION = '0.2.0'
 MAX_INPUT = 10 * 1024 * 1024
 MAX_UNPACKED = 40 * 1024 * 1024
 MAX_PART = 20 * 1024 * 1024
@@ -151,7 +151,9 @@ def cell_position(ref):
 
 def xtext(s):
     # Escape OOXML's own escape syntax before XML escaping. CR must survive XML normalization.
-    s = ESCAPE_PATTERN.sub(lambda m: '_x005F_' + m.group(0)[1:], s)
+    # Look ahead rather than consuming a full token: adjacent tokens may share
+    # an underscore, as in the literal _x005F_x0041_. Protect both starts.
+    s = re.sub(r'_(?=x[0-9a-fA-F]{4}_)', '_x005F_', s)
     return escape(s).replace('\r', '&#13;')
 
 
@@ -301,6 +303,7 @@ def read_xlsx(data):
                 require(local not in ('externalReferences', 'externalLink', 'definedName', 'oleObject'), 'Unsupported active/reference content in XLSX')
                 if local == 'Relationship':
                     target = node.attrib.get('Target', '')
+                    require(target != '', 'Missing XLSX relationship target')
                     require(node.attrib.get('TargetMode', 'Internal') == 'Internal', 'External XLSX relationships are prohibited')
                     require(':' not in target and '\\' not in target and '..' not in target.split('/'), 'Unsafe XLSX relationship target')
                     require(node.attrib.get('Type', '').rsplit('/', 1)[-1] in ('officeDocument', 'worksheet', 'styles', 'sharedStrings', 'theme', 'core-properties', 'extended-properties', 'custom-properties'), 'Unsupported XLSX relationship type')
@@ -361,8 +364,13 @@ def read_xlsx(data):
         require(sheet.tag == f'{{{NS}}}worksheet', 'Invalid worksheet namespace/root')
         require(sheet.find(f'{{{NS}}}mergeCells') is None, 'Merged cells are not supported')
         require(len(sheet.findall(f'{{{NS}}}sheetData')) == 1, 'Missing/duplicate worksheet data')
+        data_rows = sheet.find(f'{{{NS}}}sheetData')
+        require(all(row.tag == f'{{{NS}}}row' for row in data_rows),
+                'Unsupported XLSX worksheet-data child or namespace')
         seen_rows = set()
-        for row in sheet.findall(f'{{{NS}}}sheetData/{{{NS}}}row'):
+        for row in data_rows:
+            require(all(c.tag == f'{{{NS}}}c' for c in row),
+                    'Unsupported XLSX row child or namespace')
             require(row.attrib.get('r', '').isdigit(), 'Worksheet row needs an explicit row number')
             rn = int(row.attrib['r'])
             require(1 <= rn <= MAX_ROWS, 'Worksheet row exceeds limits')
@@ -405,12 +413,195 @@ def read_xlsx(data):
         return [[cells.get((r, c), {'value': '', 'type': 'blank'}) for c in range(1, maxcol+1)] for r in range(1, maxrow+1)]
 
 
+def compare_cell(wanted, got, typ, csv_mode, base, header=False):
+    diffs = []
+    # Empty CSV fields and absent/empty XLSX cells are the same empty value.
+    if wanted == '' and got['value'] == '': return diffs
+    if typ == 'text':
+        if not csv_mode and got['type'] != 'text':
+            diffs.append(dict(base, kind='type_change', expected_type='text', actual_type=got['type']))
+        if wanted != got['value']:
+            diffs.append(dict(base, kind='header_change' if header else 'text_change'))
+    else:
+        if not csv_mode and got['type'] != 'number':
+            diffs.append(dict(base, kind='type_change', expected_type='number', actual_type=got['type']))
+        try:
+            if csv_mode: numeric(got['value'])
+            elif got['type'] != 'number': raise HandoffError('Not a number')
+            got_number = xml_number(got['value'])
+            if not csv_mode:
+                numeric(format(got_number, 'f'))
+            same = wanted != '' and Decimal(wanted) == got_number
+        except HandoffError:
+            diffs.append(dict(base, kind='numeric_contract_violation'))
+            return diffs
+        if not same:
+            diffs.append(dict(base, kind='numeric_value_change'))
+        elif csv_mode and wanted != got['value']:
+            diffs.append(dict(base, kind='numeric_representation_change', values_equal=True))
+    return diffs
+
+
+def key_indices(columns, keys):
+    """Only explicitly selected, ordered text columns may identify records."""
+    require(isinstance(keys, list) and 0 < len(keys) <= len(columns) and
+            all(isinstance(key, str) for key in keys), 'Key columns must be a nonempty list of exact header names')
+    require(len(set(keys)) == len(keys), 'Key column was selected more than once')
+    by_name = {col['name']: (i, col['type']) for i, col in enumerate(columns)}
+    require(all(key in by_name for key in keys), 'Key column name was not found in the CSV header')
+    require(all(by_name[key][1] == 'text' for key in keys), 'Key columns must be text, not numeric columns')
+    return [by_name[key][0] for key in keys]
+
+
+def index_keys(rows, indices, side, typed=False, csv_mode=False):
+    """Exact tuples avoid delimiter collisions, coercion, and Unicode normalization."""
+    indexed = {}
+    for row_number, row in enumerate(rows, 2):
+        values = []
+        for ci in indices:
+            value = row[ci]['value'] if typed else row[ci]
+            if typed and not csv_mode:
+                require(row[ci]['type'] == 'text',
+                        f'{side} key {coord(row_number, ci+1)} must use text storage; '
+                        f'found {row[ci]["type"]}. Key matching stopped; no coercion is allowed.')
+            check_text(value)
+            require(value != '', f'{side} key {coord(row_number, ci+1)} is empty; every key component must be nonempty')
+            values.append(value)
+        key = tuple(values)
+        require(key not in indexed,
+                f'{side} duplicate key at rows {indexed[key][0] if key in indexed else row_number} and {row_number}; '
+                'key matching requires unique full tuples')
+        indexed[key] = (row_number, row)
+    return indexed
+
+
+def check_added_cell(got, typ, csv_mode, base):
+    """New records still obey the column contract, even without a baseline value."""
+    if got['value'] == '':
+        return []
+    diffs = []
+    if not csv_mode and got['type'] != typ:
+        diffs.append(dict(base, kind='type_contract_violation', expected_type=typ, actual_type=got['type']))
+    if typ == 'number':
+        try:
+            if csv_mode:
+                numeric(got['value'])
+            else:
+                require(got['type'] == 'number', 'Not a number')
+                numeric(format(xml_number(got['value']), 'f'))
+        except HandoffError:
+            diffs.append(dict(base, kind='numeric_contract_violation'))
+    return diffs
+
+
+def verify_keyed(c, actual, csv_mode, contract_data, returned_data, output):
+    columns = c['columns']
+    require(len(actual[0]) == len(columns) and
+            [cell['value'] for cell in actual[0]] == [col['name'] for col in columns],
+            'Keyed verification requires the original headers in the original column order; no column matching is inferred')
+    require(csv_mode or all(cell['type'] == 'text' for cell in actual[0]),
+            'Keyed verification requires text-stored headers')
+    indices = key_indices(columns, c['key_columns'])
+    baseline = index_keys(c['rows'], indices, 'Baseline')
+    returned = index_keys(actual[1:], indices, 'Returned', typed=True, csv_mode=csv_mode)
+    diffs, movements, records = [], [], []
+    summary = dict(added=0, removed=0, changed=0, type_changed=0,
+                   representation_changed=0, unchanged=0, moved=0)
+    # Baseline order gives deterministic removals, matched changes, and movement lists.
+    for key, (before_row, before) in baseline.items():
+        if key not in returned:
+            summary['removed'] += 1
+            diffs.append(dict(kind='record_removed', key=list(key), baseline_row=before_row,
+                              returned_row=None, expected=before, actual=None))
+            continue
+        after_row, after = returned[key]
+        identity = dict(key=list(key), baseline_row=before_row, returned_row=after_row)
+        if before_row != after_row:
+            movements.append(dict(identity))
+        record_diffs = []
+        for ci, (col, wanted, got) in enumerate(zip(columns, before, after), 1):
+            # Do not repeat potentially long keys for every cell: record_changes carries
+            # each matched key once; the row pair links the cell observations to it.
+            base = dict(baseline_row=before_row, returned_row=after_row,
+                        cell=coord(after_row, ci), baseline_cell=coord(before_row, ci),
+                        column=col['name'], expected=wanted, actual=got['value'])
+            record_diffs.extend(compare_cell(wanted, got, col['type'], csv_mode, base))
+        if record_diffs:
+            kinds = sorted({diff['kind'] for diff in record_diffs})
+            records.append(dict(identity, kinds=kinds))
+            summary['changed'] += 1
+            summary['type_changed'] += int('type_change' in kinds)
+            summary['representation_changed'] += int('numeric_representation_change' in kinds)
+            diffs.extend(record_diffs)
+        else:
+            summary['unchanged'] += 1
+    # Additions are listed in returned order, with independent column-contract checks.
+    for key, (after_row, after) in returned.items():
+        if key in baseline:
+            continue
+        summary['added'] += 1
+        identity = dict(key=list(key), baseline_row=None, returned_row=after_row)
+        diffs.append(dict(identity, kind='record_added', expected=None,
+                          actual=[cell['value'] for cell in after],
+                          actual_types=[cell['type'] for cell in after]))
+        for ci, (col, got) in enumerate(zip(columns, after), 1):
+            base = dict(baseline_row=None, returned_row=after_row,
+                        cell=coord(after_row, ci), baseline_cell=None,
+                        column=col['name'], expected=None, actual=got['value'])
+            diffs.extend(check_added_cell(got, col['type'], csv_mode, base))
+    summary['moved'] = len(movements)
+    report = {
+        'schema': 'csv-handoff-diff/v2',
+        'status': 'differences' if diffs or movements else 'unchanged',
+        'content_status': 'differences' if diffs else 'unchanged',
+        'comparison': 'exact unique text-key tuples; exact text; decimal numeric values; XLSX storage types',
+        'key_columns': c['key_columns'],
+        'contract_sha256': hashlib.sha256(contract_data).hexdigest(),
+        'returned_sha256': hashlib.sha256(returned_data).hexdigest(),
+        'record_summary': summary, 'record_changes': records,
+        'differences': diffs, 'row_movements': movements,
+        'notes': [
+            'Differences may be intentional edits; this report does not infer corruption.',
+            'Keys are exact ordered text tuples. No trimming, case folding, Unicode normalization, or fuzzy matching.',
+            'Modified keys are removed and added records; intent is not inferred.',
+            'Movement means a matched record has a different worksheet row number, including shifts caused by insertions/deletions.',
+            'Changed counts matched records with any cell observation; type_changed and representation_changed are overlapping subsets. Movement is separate.',
+            'No formula evaluation, formatting comparison, identity verification, or recovery of lost data.',
+            'This report includes baseline and returned values and keys; treat it as sensitive when the sources are sensitive.',
+        ],
+    }
+    out = output_dir(output, ['diff.json', 'diff.txt'])
+    (out / 'diff.json').write_bytes(json_bytes(report))
+    lines = [f'RETURN CHECK: {report["status"]}\n\nExact unique-key matching: {preview(c["key_columns"])}\n',
+             f'Content: {report["content_status"]}. Row movement is separate. Differences may be intentional edits.\n',
+             '\nRECORD SUMMARY\n' + ''.join(f'- {name}: {count}\n' for name, count in summary.items()),
+             '\nChanged counts matched records with any cell observation. Type/representation changes overlap that count.\n',
+             'Moved means a different worksheet row, including shifts from additions/removals. Changed keys are removed + added.\n',
+             '\nThis report contains original/returned values and keys; handle as sensitive when appropriate.\n',
+             '\nCONTENT OBSERVATIONS\n']
+    key_by_returned_row = {row: key for key, (row, _) in returned.items()}
+    for diff in diffs[:200]:
+        key = diff.get('key', key_by_returned_row.get(diff['returned_row']))
+        location = diff.get('cell') or f'rows {diff.get("baseline_row")} → {diff.get("returned_row")}'
+        lines.append(f'- {location}, key {preview(key)}: {diff["kind"]}; '
+                     f'expected {preview(diff.get("expected"))}, returned {preview(diff.get("actual"))}\n')
+    if len(diffs) > 200:
+        lines.append('Content display limited to 200 observations; diff.json contains the complete report.\n')
+    lines.append('\nROW MOVEMENTS (separate from content)\n')
+    for move in movements[:200]:
+        lines.append(f'- key {preview(move["key"])}: row {move["baseline_row"]} → {move["returned_row"]}\n')
+    if len(movements) > 200:
+        lines.append('Movement display limited to 200 records; diff.json contains the complete report.\n')
+    (out / 'diff.txt').write_text(''.join(lines), encoding='utf-8')
+    return report
+
+
 def load_contract(path, data=None):
     try:
         c = json.loads(read_bytes(path, MAX_UNPACKED) if data is None else data)
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise HandoffError('Invalid UTF-8 contract JSON') from exc
-    require(isinstance(c, dict) and c.get('schema') == 'csv-handoff/v1', 'Unsupported contract schema')
+    require(isinstance(c, dict) and c.get('schema') in ('csv-handoff/v1', 'csv-handoff/v2'), 'Unsupported contract schema')
     require(isinstance(c.get('dialect'), dict) and set(c['dialect']) == {'delimiter', 'quotechar'}, 'Invalid contract dialect')
     dialect(**c['dialect'])
     require(isinstance(c.get('columns'), list) and 0 < len(c['columns']) <= MAX_COLUMNS, 'Invalid contract columns')
@@ -426,7 +617,13 @@ def load_contract(path, data=None):
         for col, value in zip(c['columns'], row):
             check_text(value)
             if col['type'] == 'number' and value != '': numeric(value)
-    require(c.get('row_order') == 'fixed', 'Only fixed row order is supported')
+    if c['schema'] == 'csv-handoff/v1':
+        require(c.get('row_order') == 'fixed' and 'key_columns' not in c,
+                'A v1 contract requires fixed row order and no key columns')
+    else:
+        require(c.get('row_order') == 'keyed', 'A v2 contract requires keyed row matching')
+        indices = key_indices(c['columns'], c.get('key_columns'))
+        index_keys(rows, indices, 'Baseline')
     return c
 
 
@@ -437,13 +634,16 @@ def output_dir(path, filenames):
     return path
 
 
-def pack(source, output, delimiter, quotechar='"', numbers=()):
+def pack(source, output, delimiter, quotechar='"', numbers=(), keys=()):
     spec = {'delimiter': delimiter, 'quotechar': quotechar}
     data = read_bytes(source)
     rows = read_csv(data, spec)
     require(len(set(numbers)) == len(numbers), 'Numeric column was selected more than once')
     require(set(numbers) <= set(rows[0]), 'Numeric column name was not found in the CSV header')
     cols = [{'name': h, 'type': 'number' if h in numbers else 'text'} for h in rows[0]]
+    if keys:
+        indices = key_indices(cols, list(keys))
+        index_keys(rows[1:], indices, 'Source')
     for ri, row in enumerate(rows[1:], 2):
         for ci, (col, value) in enumerate(zip(cols, row), 1):
             if col['type'] == 'number' and value != '':
@@ -455,19 +655,27 @@ def pack(source, output, delimiter, quotechar='"', numbers=()):
     contract = {'schema': 'csv-handoff/v1', 'tool_version': VERSION, 'row_order': 'fixed', 'dialect': spec,
                 'source_sha256': hashlib.sha256(data).hexdigest(), 'xlsx_sha256': hashlib.sha256(workbook).hexdigest(),
                 'columns': cols, 'rows': rows[1:]}
+    if keys:
+        contract.update(schema='csv-handoff/v2', row_order='keyed', key_columns=list(keys))
     risks = [{'cell': coord(ri, ci), 'column': cols[ci-1]['name'], 'type': cols[ci-1]['type'], 'value': value, 'flags': flags}
              for ri, row in enumerate(rows, 1) for ci, value in enumerate(row, 1) if (flags := risk_flags(value))]
     out = output_dir(output, ['handoff.xlsx', 'contract.json', 'risks.json', 'receipt.txt'])
     (out / 'handoff.xlsx').write_bytes(workbook)
     (out / 'contract.json').write_bytes(json_bytes(contract))
     (out / 'risks.json').write_bytes(json_bytes({'schema': 'csv-handoff-risks/v1', 'cells': risks}))
-    receipt = [f'CSV HANDOFF RECEIPT\n\n{len(rows)-1} data rows × {len(cols)} columns. Fixed row order.\n',
+    matching = 'Exact unique-key matching.' if keys else 'Fixed row order.'
+    receipt = [f'CSV HANDOFF RECEIPT\n\n{len(rows)-1} data rows × {len(cols)} columns. {matching}\n',
                '\nAll columns are exact text unless explicitly selected as numbers. Numbers compare by decimal value, not spelling.\n',
                '\nCOLUMN CONTRACT\n']
     receipt += [f'- {json.dumps(c["name"], ensure_ascii=False)}: {c["type"]}\n' for c in cols]
+    if keys:
+        receipt += ['\nKEY COLUMNS (exact, ordered text tuple): ' + json.dumps(list(keys), ensure_ascii=False) + '\n',
+                    'Sorting is allowed. Every key component must be nonempty text; the full tuple must be unique. No trimming, case folding, or Unicode normalization.\n',
+                    'A changed key is a removed record plus an added record; row position changes are listed separately.\n']
     receipt += [f'\n{len(risks)} cells have informational risk flags; these are not findings of corruption. See risks.json.\n',
                 '\nKeep contract.json unchanged. The contract, risks.json, and later diff files contain source/returned cell values and may be sensitive. All processing stays local; share files only as appropriate.\n',
-                '\nReturn one Data sheet, in the same row order, with literal values only. Added formulas (including SUM) cause verification to stop.\n',
+                ('\nReturn one Data sheet with the same headers and exact unique text keys. Literal values only; added formulas (including SUM) stop verification.\n' if keys else
+                 '\nReturn one Data sheet, in the same row order, with literal values only. Added formulas (including SUM) cause verification to stop.\n'),
                 '\nRisk flags are heuristics, not exhaustive. CSV reopened in spreadsheet software may still be coerced or interpreted as formulas. This tool cannot recover already-lost digits.\n',
                 '\nThe receipt verifies data and storage types, not formatting, intent, identity, or authorship.\n']
     (out / 'receipt.txt').write_text(''.join(receipt), encoding='utf-8')
@@ -485,6 +693,8 @@ def verify(contract_path, returned, output):
     else:
         require(path.suffix.lower() == '.xlsx', 'Returned file must have a .csv or .xlsx extension')
         actual = read_xlsx(data)
+    if c['row_order'] == 'keyed':
+        return verify_keyed(c, actual, csv_mode, contract_data, data, output)
     expected = [[col['name'] for col in c['columns']]] + c['rows']
     diffs = []
     if len(actual) != len(expected):
@@ -506,30 +716,7 @@ def verify(contract_path, returned, output):
             got = actual[ri][ci]
             typ = 'text' if ri == 0 else c['columns'][ci]['type']
             base = {'cell': coord(ri+1,ci+1), 'column': c['columns'][ci]['name'], 'expected': wanted, 'actual': got['value']}
-            # Empty CSV fields and absent/empty XLSX cells are the same empty value.
-            if wanted == '' and got['value'] == '': continue
-            if typ == 'text':
-                if not csv_mode and got['type'] != 'text':
-                    diffs.append(dict(base, kind='type_change', expected_type='text', actual_type=got['type']))
-                if wanted != got['value']:
-                    diffs.append(dict(base, kind='header_change' if ri == 0 else 'text_change'))
-            else:
-                if not csv_mode and got['type'] != 'number':
-                    diffs.append(dict(base, kind='type_change', expected_type='number', actual_type=got['type']))
-                try:
-                    if csv_mode: numeric(got['value'])
-                    elif got['type'] != 'number': raise HandoffError('Not a number')
-                    got_number = xml_number(got['value'])
-                    if not csv_mode:
-                        numeric(format(got_number, 'f'))
-                    same = wanted != '' and Decimal(wanted) == got_number
-                except HandoffError:
-                    diffs.append(dict(base, kind='numeric_contract_violation'))
-                    continue
-                if not same:
-                    diffs.append(dict(base, kind='numeric_value_change'))
-                elif csv_mode and wanted != got['value']:
-                    diffs.append(dict(base, kind='numeric_representation_change', values_equal=True))
+            diffs.extend(compare_cell(wanted, got, typ, csv_mode, base, header=ri == 0))
     report = {'schema': 'csv-handoff-diff/v1', 'status': 'differences' if diffs else 'unchanged',
               'comparison': 'fixed-row-order; exact text; decimal numeric values; XLSX storage types',
               'contract_sha256': hashlib.sha256(contract_data).hexdigest(),
@@ -563,6 +750,7 @@ def main(argv=None):
     pack_p.add_argument('--delimiter', required=True, help='Explicit one-character delimiter, e.g. , or ;')
     pack_p.add_argument('--quotechar', default='"', help='Explicit CSV quote convention (default: double quote)')
     pack_p.add_argument('--number', action='append', default=[], help='Exact header name to opt into numeric cells; repeat for more columns')
+    pack_p.add_argument('--key', action='append', default=[], help='Explicit text key column; repeat for an ordered composite key (default: fixed row order)')
     verify_p = commands.add_parser('verify', help='Compare a returned literal-values CSV/XLSX to the original contract')
     verify_p.add_argument('returned', type=Path)
     verify_p.add_argument('--contract', required=True, type=Path)
@@ -570,12 +758,14 @@ def main(argv=None):
     args = p.parse_args(argv)
     try:
         if args.command == 'pack':
-            result = pack(args.source, args.output_dir, args.delimiter, args.quotechar, args.number)
+            result = pack(args.source, args.output_dir, args.delimiter, args.quotechar, args.number, args.key)
             print(json.dumps(result, ensure_ascii=False, sort_keys=True))
             return 0
         report = verify(args.contract, args.returned, args.output_dir)
-        print(json.dumps({'status': report['status'], 'observations': len(report['differences'])}, sort_keys=True))
-        return 1 if report['differences'] else 0
+        result = {'status': report['status'], 'observations': len(report['differences'])}
+        if 'row_movements' in report: result['row_movements'] = len(report['row_movements'])
+        print(json.dumps(result, sort_keys=True))
+        return 1 if report['status'] == 'differences' else 0
     except (HandoffError, OSError, ValueError, OverflowError, RecursionError) as exc:
         message = str(exc).replace('\r', '\\r').replace('\n', '\\n')
         print('csv-handoff: ' + message[:1000], file=sys.stderr)

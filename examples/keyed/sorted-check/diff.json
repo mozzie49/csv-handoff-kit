@@ -1,0 +1,50 @@
+{
+  "comparison": "exact unique text-key tuples; exact text; decimal numeric values; XLSX storage types",
+  "content_status": "unchanged",
+  "contract_sha256": "0ce6b8e742c2d548e925a36762fabb46d54e910976c3362f854771e5fcfd5fd1",
+  "differences": [],
+  "key_columns": [
+    "Region",
+    "AccountID"
+  ],
+  "notes": [
+    "Differences may be intentional edits; this report does not infer corruption.",
+    "Keys are exact ordered text tuples. No trimming, case folding, Unicode normalization, or fuzzy matching.",
+    "Modified keys are removed and added records; intent is not inferred.",
+    "Movement means a matched record has a different worksheet row number, including shifts caused by insertions/deletions.",
+    "Changed counts matched records with any cell observation; type_changed and representation_changed are overlapping subsets. Movement is separate.",
+    "No formula evaluation, formatting comparison, identity verification, or recovery of lost data.",
+    "This report includes baseline and returned values and keys; treat it as sensitive when the sources are sensitive."
+  ],
+  "record_changes": [],
+  "record_summary": {
+    "added": 0,
+    "changed": 0,
+    "moved": 2,
+    "removed": 0,
+    "representation_changed": 0,
+    "type_changed": 0,
+    "unchanged": 3
+  },
+  "returned_sha256": "ecfb8e83e3b78555a4fadae8ac3829096bc4547f20db1808f5b747248bc013b3",
+  "row_movements": [
+    {
+      "baseline_row": 2,
+      "key": [
+        "CN",
+        "00123"
+      ],
+      "returned_row": 4
+    },
+    {
+      "baseline_row": 4,
+      "key": [
+        "US",
+        "00123"
+      ],
+      "returned_row": 2
+    }
+  ],
+  "schema": "csv-handoff-diff/v2",
+  "status": "differences"
+}

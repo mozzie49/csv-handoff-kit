@@ -1,0 +1,77 @@
+{
+  "cells": [
+    {
+      "cell": "A2",
+      "column": "Key",
+      "flags": [
+        "leading_zero"
+      ],
+      "type": "text",
+      "value": "001"
+    },
+    {
+      "cell": "A6",
+      "column": "Key",
+      "flags": [
+        "whitespace"
+      ],
+      "type": "text",
+      "value": " a"
+    },
+    {
+      "cell": "A7",
+      "column": "Key",
+      "flags": [
+        "whitespace"
+      ],
+      "type": "text",
+      "value": "a "
+    },
+    {
+      "cell": "A8",
+      "column": "Key",
+      "flags": [
+        "unicode_text"
+      ],
+      "type": "text",
+      "value": "é"
+    },
+    {
+      "cell": "A9",
+      "column": "Key",
+      "flags": [
+        "unicode_text"
+      ],
+      "type": "text",
+      "value": "é"
+    },
+    {
+      "cell": "A10",
+      "column": "Key",
+      "flags": [
+        "whitespace"
+      ],
+      "type": "text",
+      "value": " "
+    },
+    {
+      "cell": "A11",
+      "column": "Key",
+      "flags": [
+        "unicode_text"
+      ],
+      "type": "text",
+      "value": "中文🙂"
+    },
+    {
+      "cell": "A12",
+      "column": "Key",
+      "flags": [
+        "formula_looking"
+      ],
+      "type": "text",
+      "value": "=literal"
+    }
+  ],
+  "schema": "csv-handoff-risks/v1"
+}

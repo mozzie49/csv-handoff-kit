@@ -1,0 +1,68 @@
+{
+  "cells": [
+    {
+      "cell": "A2",
+      "column": "key",
+      "flags": [
+        "ooxml_escape_looking"
+      ],
+      "type": "text",
+      "value": "_x005F_x0041_"
+    },
+    {
+      "cell": "A3",
+      "column": "key",
+      "flags": [
+        "ooxml_escape_looking"
+      ],
+      "type": "text",
+      "value": "_x0041_x0042_"
+    },
+    {
+      "cell": "A4",
+      "column": "key",
+      "flags": [
+        "ooxml_escape_looking"
+      ],
+      "type": "text",
+      "value": "_x0041__x0042_"
+    },
+    {
+      "cell": "A5",
+      "column": "key",
+      "flags": [
+        "ooxml_escape_looking"
+      ],
+      "type": "text",
+      "value": "_x005F_x005F_x0041_"
+    },
+    {
+      "cell": "A6",
+      "column": "key",
+      "flags": [
+        "ooxml_escape_looking"
+      ],
+      "type": "text",
+      "value": "_x005F_"
+    },
+    {
+      "cell": "A7",
+      "column": "key",
+      "flags": [
+        "ooxml_escape_looking"
+      ],
+      "type": "text",
+      "value": "_x0041_"
+    },
+    {
+      "cell": "A8",
+      "column": "key",
+      "flags": [
+        "ooxml_escape_looking"
+      ],
+      "type": "text",
+      "value": "_x000d_x000a_"
+    }
+  ],
+  "schema": "csv-handoff-risks/v1"
+}

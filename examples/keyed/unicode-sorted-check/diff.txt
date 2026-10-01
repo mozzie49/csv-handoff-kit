@@ -1,0 +1,32 @@
+RETURN CHECK: differences
+
+Exact unique-key matching: ["Key"]
+Content: unchanged. Row movement is separate. Differences may be intentional edits.
+
+RECORD SUMMARY
+- added: 0
+- removed: 0
+- changed: 0
+- type_changed: 0
+- representation_changed: 0
+- unchanged: 11
+- moved: 10
+
+Changed counts matched records with any cell observation. Type/representation changes overlap that count.
+Moved means a different worksheet row, including shifts from additions/removals. Changed keys are removed + added.
+
+This report contains original/returned values and keys; handle as sensitive when appropriate.
+
+CONTENT OBSERVATIONS
+
+ROW MOVEMENTS (separate from content)
+- key ["001"]: row 2 → 12
+- key ["1"]: row 3 → 11
+- key ["A"]: row 4 → 10
+- key ["a"]: row 5 → 9
+- key [" a"]: row 6 → 8
+- key ["é"]: row 8 → 6
+- key ["é"]: row 9 → 5
+- key [" "]: row 10 → 4
+- key ["中文🙂"]: row 11 → 3
+- key ["=literal"]: row 12 → 2

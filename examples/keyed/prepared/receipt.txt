@@ -1,0 +1,25 @@
+CSV HANDOFF RECEIPT
+
+3 data rows × 4 columns. Exact unique-key matching.
+
+All columns are exact text unless explicitly selected as numbers. Numbers compare by decimal value, not spelling.
+
+COLUMN CONTRACT
+- "Region": text
+- "AccountID": text
+- "Label": text
+- "Amount": number
+
+KEY COLUMNS (exact, ordered text tuple): ["Region", "AccountID"]
+Sorting is allowed. Every key component must be nonempty text; the full tuple must be unique. No trimming, case folding, or Unicode normalization.
+A changed key is a removed record plus an added record; row position changes are listed separately.
+
+7 cells have informational risk flags; these are not findings of corruption. See risks.json.
+
+Keep contract.json unchanged. The contract, risks.json, and later diff files contain source/returned cell values and may be sensitive. All processing stays local; share files only as appropriate.
+
+Return one Data sheet with the same headers and exact unique text keys. Literal values only; added formulas (including SUM) stop verification.
+
+Risk flags are heuristics, not exhaustive. CSV reopened in spreadsheet software may still be coerced or interpreted as formulas. This tool cannot recover already-lost digits.
+
+The receipt verifies data and storage types, not formatting, intent, identity, or authorship.

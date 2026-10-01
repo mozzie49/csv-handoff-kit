@@ -1,0 +1,27 @@
+RETURN CHECK: differences
+
+Exact unique-key matching: ["Region", "AccountID"]
+Content: differences. Row movement is separate. Differences may be intentional edits.
+
+RECORD SUMMARY
+- added: 1
+- removed: 1
+- changed: 1
+- type_changed: 0
+- representation_changed: 0
+- unchanged: 1
+- moved: 2
+
+Changed counts matched records with any cell observation. Type/representation changes overlap that count.
+Moved means a different worksheet row, including shifts from additions/removals. Changed keys are removed + added.
+
+This report contains original/returned values and keys; handle as sensitive when appropriate.
+
+CONTENT OBSERVATIONS
+- rows 3 → None, key ["CN", "00007"]: record_removed; expected ["CN", "00007", "李四", "-3.75"], returned null
+- C2, key ["US", "00123"]: text_change; expected "Zoë", returned "Zoë edited"
+- rows None → 4, key ["JP", "00009"]: record_added; expected null, returned ["JP", "00009", "架空", "2"]
+
+ROW MOVEMENTS (separate from content)
+- key ["CN", "00123"]: row 2 → 3
+- key ["US", "00123"]: row 4 → 2
