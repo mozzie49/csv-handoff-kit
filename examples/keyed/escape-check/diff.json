@@ -1,0 +1,32 @@
+{
+  "comparison": "exact unique text-key tuples; exact text; decimal numeric values; XLSX storage types",
+  "content_status": "unchanged",
+  "contract_sha256": "1c53ab03c2fd65d61f65fa84f4ef15346c1702bb75b42f1ad8402737e82b5b9c",
+  "differences": [],
+  "key_columns": [
+    "key"
+  ],
+  "notes": [
+    "Differences may be intentional edits; this report does not infer corruption.",
+    "Keys are exact ordered text tuples. No trimming, case folding, Unicode normalization, or fuzzy matching.",
+    "Modified keys are removed and added records; intent is not inferred.",
+    "Movement means a matched record has a different worksheet row number, including shifts caused by insertions/deletions.",
+    "Changed counts matched records with any cell observation; type_changed and representation_changed are overlapping subsets. Movement is separate.",
+    "No formula evaluation, formatting comparison, identity verification, or recovery of lost data.",
+    "This report includes baseline and returned values and keys; treat it as sensitive when the sources are sensitive."
+  ],
+  "record_changes": [],
+  "record_summary": {
+    "added": 0,
+    "changed": 0,
+    "moved": 0,
+    "removed": 0,
+    "representation_changed": 0,
+    "type_changed": 0,
+    "unchanged": 7
+  },
+  "returned_sha256": "8da1995e1271e6b0277782fdf38da6666472f7ce1faefc7483dbe9e83480c9eb",
+  "row_movements": [],
+  "schema": "csv-handoff-diff/v2",
+  "status": "unchanged"
+}
