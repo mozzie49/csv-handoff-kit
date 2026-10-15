@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; worker-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta name="description" content="Convert UTF-8 CSV to an all-text XLSX in your browser. Keep leading zeros, long IDs, Unicode, and formula-looking text without Python or uploads.">
+<title>CSV Handoff Kit · All-text XLSX</title>
+<link rel="stylesheet" href="./style.css">
+<script type="module" src="./assets/app.js"></script>
+</head>
+<body>
+<header><a class="brand" href="https://github.com/mozzie49/csv-handoff-kit">CSV Handoff Kit</a><span>Browser trial</span></header>
+<main>
+<section class="intro">
+<p class="eyebrow">KEEP IDENTIFIERS AS WRITTEN</p>
+<h1>CSV in. Text cells out.</h1>
+<p class="lead">Keep <strong>00123</strong>, <strong>76E9</strong>, long IDs, and বাংলা intact in an XLSX. Every column stays text, including numbers, dates, and formula-looking values.</p>
+<p class="privacy">No Python. No account. No file upload. Conversion happens in this tab.</p>
+</section>
+<section class="converter" aria-labelledby="convert-heading">
+<h2 id="convert-heading">Make an all-text XLSX</h2>
+<div class="controls">
+<label class="file-label" for="file">1. Choose a UTF-8 CSV<input id="file" type="file" accept=".csv,.tsv,text/csv,text/tab-separated-values"></label>
+<label for="delimiter">2. Confirm the separator<select id="delimiter"><option value=",">Comma (,)</option><option value=";">Semicolon (;)</option><option value="&#9;">Tab</option><option value="|">Pipe (|)</option></select></label>
+</div>
+<p id="filename" class="muted">No file chosen</p>
+<p class="small">Double quotes surround quoted fields; double a quote inside a field. The first row must contain unique, nonempty headers. Separators are never guessed.</p>
+<div class="actions"><button id="convert" class="primary" disabled>Convert to all-text XLSX</button><button id="sample">Try a fictional sample</button><button id="cancel" hidden>Cancel</button><button id="clear" class="quiet">Clear</button></div>
+<p id="status" role="status" aria-live="polite">Choose a UTF-8 CSV, or try the fictional sample.</p>
+</section>
+<section id="result" class="result" aria-labelledby="result-heading" hidden>
+<div class="result-top"><div><h2 id="result-heading">Your text-only workbook is ready</h2><p id="summary"></p></div><a id="download" class="primary" download>Download XLSX</a></div>
+<p class="small">Open this XLSX in your spreadsheet app. Formula-looking content such as =1+1 is a literal string, not an executable formula. Sharing the downloaded file is a separate action.</p>
+<div id="preview" class="preview" tabindex="0" aria-label="Shortened data preview"></div><p id="preview-note" class="small"></p>
+</section>
+<section class="details" aria-label="Scope and privacy">
+<article><h2>A small, focused trial</h2><p>This page creates one <strong>Data</strong> sheet with actual string cells and Text formatting. It cannot repair digits or characters already changed upstream.</p><p>It does not create a contract or risk receipt, select numeric columns, or compare returned files. Use the <a href="https://github.com/mozzie49/csv-handoff-kit#try-the-fictional-example">Python CLI</a> for that workflow.</p></article>
+<article><h2>Limits are checked first</h2><p>UTF-8, with an optional initial BOM. Up to 10 MiB, 10,000 rows including the header, 256 columns, 250,000 cells, and 32,767 UTF-16 code units per field. Malformed CSV, ragged rows, blank lines, and unsupported control characters are rejected.</p><p>Generated XLSX: at most 10 MiB; each expanded XML part at most 20 MiB. A file within the input limits may still need splitting if its workbook exceeds those limits.</p></article>
+<article><h2>Your file stays in this tab</h2><p>The page loads its code from this host. Selected CSV bytes are processed in a local browser worker; there are no processing requests, analytics, CDNs, or persistent storage. Clear or close this tab when finished.</p><p>Browser extensions and the host serving this page remain part of your trust boundary. The download contains your source values. Keep it as private as your CSV.</p></article>
+</section>
+<footer>MIT · Fictional sample data · Browser converter trial. Microsoft Excel and stable LibreOffice have not been tested for this browser build. <a href="https://github.com/mozzie49/csv-handoff-kit">Source and CLI validation</a> · <a href="./THIRD-PARTY-LICENSES.txt">Licenses</a></footer>
+<noscript>This converter needs JavaScript to run locally. No file can be converted while JavaScript is disabled.</noscript>
+</main>
+</body>
+</html>
