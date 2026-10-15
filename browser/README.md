@@ -4,6 +4,8 @@ A focused, browser-only entry point for CSV Handoff Kit. Choose a UTF-8 CSV or c
 
 The browser page does **not** implement the CLI's numeric-column choices, risk receipts, contracts, keyed matching, or return verification. The existing Python CLI is unchanged. This is not a promise that arbitrary spreadsheet applications preserve every value through future edits/saves, or a way to recover digits already lost upstream.
 
+[Open the live browser demo](https://mozzie49.github.io/csv-handoff-kit/) and click **Try a fictional sample**. No installation or account is needed.
+
 ## Run a local preview
 
 For development only, use Node.js 22+ (CI uses 24):
@@ -15,7 +17,7 @@ npm run build
 npm run serve
 ```
 
-Open the printed `http://127.0.0.1:4175` address. `dist/` is a static site; a host can serve that folder without Node.js, Python, a backend, or runtime CDN dependencies. Relative asset paths support a project subdirectory. Opening `index.html` with `file://` is not supported because browsers restrict module workers. There is no deployment workflow in this change; publishing requires a separate reviewed action.
+Open the printed `http://127.0.0.1:4175` address. `dist/` is a static site; a host can serve that folder without Node.js, Python, a backend, or runtime CDN dependencies. Relative asset paths support a project subdirectory. Opening `index.html` with `file://` is not supported because browsers restrict module workers. The live trial is published from the repository’s `main` branch, `/docs` folder, after review and CI. The seven static files in `docs/` are byte-matched copies of the tested `dist/` output, alongside `.nojekyll`; update them only after rebuilding and validating changes.
 
 ## Supported subset
 
@@ -59,7 +61,7 @@ Local validation on 2026-10-15: 33 JavaScript core tests passed; two generated f
 
 Remote validation on 2026-10-15: [Chromium CI run 38732909788](https://github.com/mozzie49/csv-handoff-kit/actions/runs/38732909788) passed all **6 browser tests** for `db07bd33f1f02702b86af89fd222c7868053b066`, including actual download, malformed/oversize rejection, in-flight cancellation/replacement, repeated use/reload, pending reads, URL cleanup, and project-subdirectory hosting. The earlier run exposed a test-harness worker-cache issue; cancellation and replacement now run in isolated contexts and still require proof that each network gate was entered. No product code changed for that test correction.
 
-The run's 390px/mobile and 1280px/desktop screenshots were visually reviewed without clipping or overlap blockers. Its actual downloaded fictional workbook was independently read with openpyxl: all 24 expected values matched exactly, with string storage and Text format throughout. SHA-256: `1e560a06c156ae05bc42119e6cf8ab4f64cfee86f7b5d36d32fa8ad39a676c26`. All seven static build files matched the reviewed local build byte-for-byte. These are synthetic tests, not a customer trial or a broad spreadsheet-application compatibility claim. [Draft PR #3](https://github.com/mozzie49/csv-handoff-kit/pull/3) records the final-commit checks; merge and deployment remain separate actions.
+The run's 390px/mobile and 1280px/desktop screenshots were visually reviewed without clipping or overlap blockers. Its actual downloaded fictional workbook was independently read with openpyxl: all 24 expected values matched exactly, with string storage and Text format throughout. SHA-256: `1e560a06c156ae05bc42119e6cf8ab4f64cfee86f7b5d36d32fa8ad39a676c26`. All seven static build files matched the reviewed local build byte-for-byte. These are synthetic tests, not a customer trial or a broad spreadsheet-application compatibility claim. [Merged PR #3](https://github.com/mozzie49/csv-handoff-kit/pull/3) records the final-commit checks and subsequent publication. [Pages deployment 38735293684](https://github.com/mozzie49/csv-handoff-kit/actions/runs/38735293684) succeeded on 2026-10-15; the live sample/download, selected-file conversion, malformed-input rejection, Clear, and reload were checked in a cloud browser. All seven served files matched the reviewed build byte-for-byte. Network requests were checked in Chromium CI on that identical build, not separately captured from the live cloud-browser session.
 
 As in the CLI's existing validation notes, openpyxl exposes an escape prefix for some inline OOXML-looking literals; those cases are checked against the CLI decoder and direct XML instead. Microsoft Excel and stable LibreOffice have not been tested for this browser build.
 
