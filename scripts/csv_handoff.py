@@ -20,7 +20,7 @@ from pathlib import Path
 from xml.etree import ElementTree as ET
 from xml.sax.saxutils import escape
 
-VERSION = '0.2.0'
+VERSION = '0.2.1'
 MAX_INPUT = 10 * 1024 * 1024
 MAX_UNPACKED = 40 * 1024 * 1024
 MAX_PART = 20 * 1024 * 1024
