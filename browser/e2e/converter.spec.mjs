@@ -36,23 +36,32 @@ test('valid → malformed/oversized input clears stale output; exact separator; 
  await page.locator('#clear').click();await expect(page.locator('#convert')).toBeDisabled();
 });
 
-test('cancel, in-flight replacement, repeated sample and reload cannot expose stale results',async({page})=>{
+async function holdWorker(page){
+ let release,entered=false;const gate=new Promise(resolve=>{release=resolve;});
+ await page.route('**/assets/worker.js',async route=>{entered=true;await gate;await route.continue().catch(()=>{});});
+ return {release,entered:()=>entered};
+}
+
+test('cancelling an in-flight worker clears output and allows another conversion',async({page})=>{
  await page.goto('/');
- const holdWorker=async()=>{
-  let release,entered=false;const gate=new Promise(resolve=>{release=resolve;});
-  await page.route('**/assets/worker.js',async route=>{entered=true;await gate;await route.continue().catch(()=>{});});
-  return {release,entered:()=>entered};
- };
  // Verify a worker request actually enters the gate before cancelling it.
- const cancelled=await holdWorker();
+ const cancelled=await holdWorker(page);
  try{
   await page.locator('#sample').click();await expect.poll(cancelled.entered).toBe(true);
   await page.locator('#cancel').click();
   await expect(page.locator('#status')).toContainText('cancelled');await expect(page.locator('#result')).toBeHidden();
  }finally{cancelled.release();}
  await page.unrouteAll({behavior:'wait'});
- // Replace an in-flight sample job before its worker script can run.
- const stale=await holdWorker();
+ await page.locator('#sample').click();await expect(page.locator('#result')).toBeVisible();
+ await expect(page.locator('#preview')).toContainText('76E9');
+});
+
+// A fresh test context avoids the previous scenario's module-worker script cache.
+// The gate must actually be entered; a completed fast conversion is not evidence
+// that replacement interrupted a job.
+test('in-flight replacement, repeated sample and reload cannot expose stale results',async({page})=>{
+ await page.goto('/');
+ const stale=await holdWorker(page);
  try{
   await page.locator('#sample').click();await expect.poll(stale.entered).toBe(true);
   await upload(page,'replacement.csv','Identifier\n00077');
