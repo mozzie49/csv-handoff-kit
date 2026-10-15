@@ -1,3 +1,11 @@
+v0.2.1 release-candidate local validation, 2026-10-15
+CPython 3.12.14; openpyxl 3.1.5
+Command: python3 -m unittest discover -s tests -v
+
+test_blank_is_not_zero_and_whitespace_is_not_blank (test_cleared_numeric.ClearedNumericTests.test_blank_is_not_zero_and_whitespace_is_not_blank) ... ok
+test_cleared_csv_number_is_an_edit_in_both_matching_modes (test_cleared_numeric.ClearedNumericTests.test_cleared_csv_number_is_an_edit_in_both_matching_modes) ... ok
+test_cleared_xlsx_supported_blank_encodings_in_both_modes (test_cleared_numeric.ClearedNumericTests.test_cleared_xlsx_supported_blank_encodings_in_both_modes) ... ok
+test_independent_openpyxl_clear_and_save_in_both_modes (test_cleared_numeric.ClearedNumericTests.test_independent_openpyxl_clear_and_save_in_both_modes) ... ok
 test_ambiguous_inline_string_rejected (test_handoff.HandoffTests.test_ambiguous_inline_string_rejected) ... ok
 test_blank_numeric_supported (test_handoff.HandoffTests.test_blank_numeric_supported) ... ok
 test_bom_custom_delimiter_quoting (test_handoff.HandoffTests.test_bom_custom_delimiter_quoting) ... ok
@@ -87,6 +95,105 @@ test_unchanged_csv_and_xlsx (test_keyed.KeyedTests.test_unchanged_csv_and_xlsx) 
 test_unsupported_data_rows_and_cells_cannot_be_ignored (test_keyed.KeyedTests.test_unsupported_data_rows_and_cells_cannot_be_ignored) ... ok
 
 ----------------------------------------------------------------------
-Ran 87 tests in 1.744s
+Ran 91 tests in 1.462s
 
 OK
+
+Command: python3 -S -m unittest discover -s tests -v
+
+test_blank_is_not_zero_and_whitespace_is_not_blank (test_cleared_numeric.ClearedNumericTests.test_blank_is_not_zero_and_whitespace_is_not_blank) ... ok
+test_cleared_csv_number_is_an_edit_in_both_matching_modes (test_cleared_numeric.ClearedNumericTests.test_cleared_csv_number_is_an_edit_in_both_matching_modes) ... ok
+test_cleared_xlsx_supported_blank_encodings_in_both_modes (test_cleared_numeric.ClearedNumericTests.test_cleared_xlsx_supported_blank_encodings_in_both_modes) ... ok
+test_independent_openpyxl_clear_and_save_in_both_modes (test_cleared_numeric.ClearedNumericTests.test_independent_openpyxl_clear_and_save_in_both_modes) ... skipped 'Optional openpyxl not installed'
+test_ambiguous_inline_string_rejected (test_handoff.HandoffTests.test_ambiguous_inline_string_rejected) ... ok
+test_blank_numeric_supported (test_handoff.HandoffTests.test_blank_numeric_supported) ... ok
+test_bom_custom_delimiter_quoting (test_handoff.HandoffTests.test_bom_custom_delimiter_quoting) ... ok
+test_cli_exit_codes (test_handoff.HandoffTests.test_cli_exit_codes) ... ok
+test_contract_dialect_type_rejected_cleanly (test_handoff.HandoffTests.test_contract_dialect_type_rejected_cleanly) ... ok
+test_control_and_cell_limits (test_handoff.HandoffTests.test_control_and_cell_limits) ... ok
+test_corrupt_deflate_rejected_without_traceback (test_handoff.HandoffTests.test_corrupt_deflate_rejected_without_traceback) ... ok
+test_csv_encoding_shape_header_errors (test_handoff.HandoffTests.test_csv_encoding_shape_header_errors) ... ok
+test_default_all_text (test_handoff.HandoffTests.test_default_all_text) ... ok
+test_deterministic_bytes (test_handoff.HandoffTests.test_deterministic_bytes) ... ok
+test_doctype_entity_rejected (test_handoff.HandoffTests.test_doctype_entity_rejected) ... ok
+test_duplicate_cell_rejected (test_handoff.HandoffTests.test_duplicate_cell_rejected) ... ok
+test_duplicate_zip_path_rejected (test_handoff.HandoffTests.test_duplicate_zip_path_rejected) ... ok
+test_external_relationship_rejected (test_handoff.HandoffTests.test_external_relationship_rejected) ... ok
+test_formula_cached_value_rejected (test_handoff.HandoffTests.test_formula_cached_value_rejected) ... ok
+test_independent_openpyxl_readback (test_handoff.HandoffTests.test_independent_openpyxl_readback) ... skipped 'Optional independent-reader dependency openpyxl is not installed'
+test_independent_xml_and_numeric_types (test_handoff.HandoffTests.test_independent_xml_and_numeric_types) ... ok
+test_invalid_numeric_xml_rejected (test_handoff.HandoffTests.test_invalid_numeric_xml_rejected) ... ok
+test_invalid_or_overlimit_reference_rejected (test_handoff.HandoffTests.test_invalid_or_overlimit_reference_rejected) ... ok
+test_literals_cr_lf_unicode_escapes (test_handoff.HandoffTests.test_literals_cr_lf_unicode_escapes) ... ok
+test_macro_and_embedded_parts_rejected (test_handoff.HandoffTests.test_macro_and_embedded_parts_rejected) ... ok
+test_macro_content_type_rejected (test_handoff.HandoffTests.test_macro_content_type_rejected) ... ok
+test_metadata_roots_and_types_rejected (test_handoff.HandoffTests.test_metadata_roots_and_types_rejected) ... ok
+test_missing_empty_cells_equivalent (test_handoff.HandoffTests.test_missing_empty_cells_equivalent) ... ok
+test_no_overwrite (test_handoff.HandoffTests.test_no_overwrite) ... ok
+test_numeric_acceptance (test_handoff.HandoffTests.test_numeric_acceptance) ... ok
+test_numeric_rejections (test_handoff.HandoffTests.test_numeric_rejections) ... ok
+test_numeric_representation_change_is_not_value_change (test_handoff.HandoffTests.test_numeric_representation_change_is_not_value_change) ... ok
+test_numeric_value_change (test_handoff.HandoffTests.test_numeric_value_change) ... ok
+test_ooxml_escapes_do_not_cross_rich_text_runs (test_handoff.HandoffTests.test_ooxml_escapes_do_not_cross_rich_text_runs) ... ok
+test_pack_obeys_reader_output_budgets (test_handoff.HandoffTests.test_pack_obeys_reader_output_budgets) ... ok
+test_reorder_reports_positional_differences (test_handoff.HandoffTests.test_reorder_reports_positional_differences) ... ok
+test_required_risk_flags (test_handoff.HandoffTests.test_required_risk_flags) ... ok
+test_return_exponent_same_value (test_handoff.HandoffTests.test_return_exponent_same_value) ... ok
+test_return_numeric_contract_violation (test_handoff.HandoffTests.test_return_numeric_contract_violation) ... ok
+test_row_column_cell_and_file_limits (test_handoff.HandoffTests.test_row_column_cell_and_file_limits) ... ok
+test_shape_header_changes (test_handoff.HandoffTests.test_shape_header_changes) ... ok
+test_shared_strings_and_rich_text_reading (test_handoff.HandoffTests.test_shared_strings_and_rich_text_reading) ... ok
+test_style_index_rejected (test_handoff.HandoffTests.test_style_index_rejected) ... ok
+test_text_changes_classified (test_handoff.HandoffTests.test_text_changes_classified) ... ok
+test_type_change_with_equal_text (test_handoff.HandoffTests.test_type_change_with_equal_text) ... ok
+test_unchanged_csv_roundtrip (test_handoff.HandoffTests.test_unchanged_csv_roundtrip) ... ok
+test_unchanged_xlsx_roundtrip (test_handoff.HandoffTests.test_unchanged_xlsx_roundtrip) ... ok
+test_unknown_number_column_rejected (test_handoff.HandoffTests.test_unknown_number_column_rejected) ... ok
+test_utf16_xml_rejected (test_handoff.HandoffTests.test_utf16_xml_rejected) ... ok
+test_xml_depth_and_node_limits (test_handoff.HandoffTests.test_xml_depth_and_node_limits) ... ok
+test_zip_entry_limit (test_handoff.HandoffTests.test_zip_entry_limit) ... ok
+test_zip_expansion_limit (test_handoff.HandoffTests.test_zip_expansion_limit) ... ok
+test_zip_ratio_limit (test_handoff.HandoffTests.test_zip_ratio_limit) ... ok
+test_added_records_get_numeric_and_type_contract_checks (test_keyed.KeyedTests.test_added_records_get_numeric_and_type_contract_checks) ... ok
+test_baseline_and_returned_hashes_identify_exact_bytes (test_keyed.KeyedTests.test_baseline_and_returned_hashes_identify_exact_bytes) ... ok
+test_blank_spreadsheet_row_is_not_silently_ignored (test_keyed.KeyedTests.test_blank_spreadsheet_row_is_not_silently_ignored) ... ok
+test_cli_key_flags_and_exit_codes (test_keyed.KeyedTests.test_cli_key_flags_and_exit_codes) ... ok
+test_contract_duplicate_empty_and_wrong_type_keys_rejected (test_keyed.KeyedTests.test_contract_duplicate_empty_and_wrong_type_keys_rejected) ... ok
+test_contract_matching_mode_cannot_be_silently_changed (test_keyed.KeyedTests.test_contract_matching_mode_cannot_be_silently_changed) ... ok
+test_default_pack_is_still_v1_and_positional (test_keyed.KeyedTests.test_default_pack_is_still_v1_and_positional) ... ok
+test_each_nontext_key_storage_rejected (test_keyed.KeyedTests.test_each_nontext_key_storage_rejected) ... ok
+test_exact_numeric_precision_rules_are_retained (test_keyed.KeyedTests.test_exact_numeric_precision_rules_are_retained) ... ok
+test_exact_unicode_case_whitespace_and_tuple_boundaries (test_keyed.KeyedTests.test_exact_unicode_case_whitespace_and_tuple_boundaries) ... ok
+test_formula_and_active_content_still_block_before_key_matching (test_keyed.KeyedTests.test_formula_and_active_content_still_block_before_key_matching) ... ok
+test_header_only_all_added_and_all_removed (test_keyed.KeyedTests.test_header_only_all_added_and_all_removed) ... ok
+test_header_storage_must_be_text (test_keyed.KeyedTests.test_header_storage_must_be_text) ... ok
+test_independent_openpyxl_reorders_edits_and_preserves_text_keys (test_keyed.KeyedTests.test_independent_openpyxl_reorders_edits_and_preserves_text_keys) ... skipped 'Optional independent-reader dependency openpyxl is not installed'
+test_key_contract_explicit_version_and_selection (test_keyed.KeyedTests.test_key_contract_explicit_version_and_selection) ... ok
+test_keyed_outputs_deterministic (test_keyed.KeyedTests.test_keyed_outputs_deterministic) ... ok
+test_literal_escape_decoding_is_single_pass (test_keyed.KeyedTests.test_literal_escape_decoding_is_single_pass) ... ok
+test_long_keys_are_not_repeated_per_cell_in_json (test_keyed.KeyedTests.test_long_keys_are_not_repeated_per_cell_in_json) ... ok
+test_missing_relationship_target_is_rejected_cleanly (test_keyed.KeyedTests.test_missing_relationship_target_is_rejected_cleanly) ... ok
+test_missing_repeated_unknown_or_malformed_key_columns_rejected (test_keyed.KeyedTests.test_missing_repeated_unknown_or_malformed_key_columns_rejected) ... ok
+test_modified_key_is_removed_and_added_without_inferred_intent (test_keyed.KeyedTests.test_modified_key_is_removed_and_added_without_inferred_intent) ... ok
+test_nonkey_storage_change_reported (test_keyed.KeyedTests.test_nonkey_storage_change_reported) ... ok
+test_numeric_key_storage_is_blocking_even_if_spelling_matches (test_keyed.KeyedTests.test_numeric_key_storage_is_blocking_even_if_spelling_matches) ... ok
+test_numeric_representation_and_value_after_reorder (test_keyed.KeyedTests.test_numeric_representation_and_value_after_reorder) ... ok
+test_old_v1_examples_keep_behavior_and_report_schema (test_keyed.KeyedTests.test_old_v1_examples_keep_behavior_and_report_schema) ... ok
+test_overlapping_and_repeated_escape_literals_survive_fixed_and_keyed_pack (test_keyed.KeyedTests.test_overlapping_and_repeated_escape_literals_survive_fixed_and_keyed_pack) ... ok
+test_pack_invalid_key_selection_rejected (test_keyed.KeyedTests.test_pack_invalid_key_selection_rejected) ... ok
+test_published_escape_fixture_and_detected_application_save_edge (test_keyed.KeyedTests.test_published_escape_fixture_and_detected_application_save_edge) ... ok
+test_published_fictional_keyed_fixtures (test_keyed.KeyedTests.test_published_fictional_keyed_fixtures) ... ok
+test_reordered_edited_added_removed (test_keyed.KeyedTests.test_reordered_edited_added_removed) ... ok
+test_reordered_or_changed_or_missing_headers_block_matching (test_keyed.KeyedTests.test_reordered_or_changed_or_missing_headers_block_matching) ... ok
+test_resource_limits_remain_in_force (test_keyed.KeyedTests.test_resource_limits_remain_in_force) ... ok
+test_return_duplicate_or_empty_key_rejected (test_keyed.KeyedTests.test_return_duplicate_or_empty_key_rejected) ... ok
+test_rich_text_split_escape_like_key_stays_literal (test_keyed.KeyedTests.test_rich_text_split_escape_like_key_stays_literal) ... ok
+test_sorted_only_content_unchanged_and_movement_separate (test_keyed.KeyedTests.test_sorted_only_content_unchanged_and_movement_separate) ... ok
+test_source_duplicate_or_empty_key_rejected_before_output (test_keyed.KeyedTests.test_source_duplicate_or_empty_key_rejected_before_output) ... ok
+test_unchanged_csv_and_xlsx (test_keyed.KeyedTests.test_unchanged_csv_and_xlsx) ... ok
+test_unsupported_data_rows_and_cells_cannot_be_ignored (test_keyed.KeyedTests.test_unsupported_data_rows_and_cells_cannot_be_ignored) ... ok
+
+----------------------------------------------------------------------
+Ran 91 tests in 1.199s
+
+OK (skipped=3)

@@ -1,8 +1,42 @@
 # Validation record
 
+## v0.2.1 release-candidate validation, 2026-10-15
+
+This records local validation of a candidate based on reviewed [PR #2](https://github.com/mozzie49/csv-handoff-kit/pull/2), head `3ea450e6988dc0a6cc41ae743c12b0619565497c`. It is not a publication, release, certification, or customer trial. The only runtime change beyond that reviewed fix is the reported tool version, now `0.2.1`. Contract/report schemas and matching defaults are unchanged.
+
+**Correction:** clearing an existing numeric value now reports `numeric_value_change`, rather than `numeric_contract_violation` or a spurious XLSX storage-type change. The value deletion remains visible and `verify` still exits **1**. Empty and zero remain different; whitespace-only numeric text is still a contract violation.
+
+### Clean first-use workflow
+
+The 75-file candidate was packaged, extracted into a fresh project-local `.agents/skills/csv-handoff-kit` directory, and checked from an unrelated working directory whose path contains spaces. Commands used `python -I -S`, an empty HOME, and no installed Python dependencies. Codex CLI 0.159.2's local app-server discovered the skill as enabled without skill errors. Only initialization and `skills/list` were used: no model call, login, or paid API invocation. Claude Code host discovery was not tested.
+
+A separate, clearly fictional three-record example was replayed using the installed candidate:
+
+1. Pack the original CSV with explicit text key `record_key`; IDs `00123`, `00456`, and `00789` remain literal text in the generated XLSX
+2. Verify the untouched generated XLSX: exit 0 and no differences
+3. Verify a returned CSV: exit 1, R4 added, R3 removed, R1 `external_id` changed from `00123` to `123`, and R1 `status` changed from `pending` to `approved`; R1's row movement is reported separately
+4. Verify a sorted-only return: exit 1, content unchanged, and exactly two row movements
+5. Separately clear `12.50` in a sorted numeric-column return: exit 1, one `numeric_value_change`, exact original B2 and returned B3 locations, and two separate row movements
+
+The original pinned v0.2.0 example also passed its 15 bundled checks without alteration. Candidate comparisons matched its results except the expected contract SHA change: newly packed contracts identify `tool_version: 0.2.1`. Both new fixed-order and keyed packs selected the same v1/v2 schemas as before. The standalone example is validation input, not bundled product functionality or evidence of a real customer trial. No additional first-use defect was found.
+
+### Candidate checks and boundaries
+
+- CPython 3.12.14 with openpyxl 3.1.5: **91 tests passed**, no failures or skips
+- Standard-library-only run: **91 tests run, 88 passed, 3 optional-reader tests skipped**
+- Skill frontmatter validation and Python compilation passed
+- Existing `examples/` files are retained byte-for-byte, including their historical `0.1.0`/`0.2.0` contract versions and application-produced artifacts; they were not regenerated for the version bump
+- Current file sizes and SHA-256 values are in `manifest.json`; the manifest excludes itself and runtime caches
+- PR #2's unchanged reviewed code passed remote Python 3.10 and 3.13 jobs ([run 38700791370](https://github.com/mozzie49/csv-handoff-kit/actions/runs/38700791370)); **those jobs are not remote CI for this later metadata/version candidate**
+- Microsoft Excel, stable LibreOffice, arbitrary pre-existing workbook comparison, and desktop-editor sorting remain untested or unsupported as documented below
+
+Development, documentation, testing, and review were AI-assisted. All examples use invented data. A new release must rerun remote CI on the final candidate commit; this dated local record does not claim that has happened.
+
+## Historical validation
+
 Local experimental release validation, 2026-10-01. This records observable tests, not certification, an exhaustive security audit, or proof of behavior in every spreadsheet application.
 
-## v0.2.0 exact-key extension (local, independently reviewed)
+## Historical v0.2.0 exact-key extension (local, independently reviewed)
 
 Command: `python -m unittest discover -s tests -v`.
 
@@ -28,7 +62,7 @@ Additional smoke checks:
 
 No Excel or LibreOffice application sorting test is claimed. The new escape-literal import/save check below is a separate edge test; the standard-fixture LibreOfficeDev save test remains historical baseline coverage. No adoption, novelty, broad unserved-demand, or full-OOXML-compatibility claim is made.
 
-## v0.2.0 independent review and corrections
+## Historical v0.2.0 independent review and corrections
 
 A separate review ran the original 81-test candidate, inspected the reader/writer and key matcher, and exercised 150 seeded CSV reorder/edit/add/remove cases against an independently calculated key/row oracle. Another 50 cases used independently written openpyxl XLSX returns. Counts, content changes, movement, exact key tuples, and baseline/returned cell indices matched. A copied script worked with `python -I` from an unrelated directory. All existing keyed prepared fixtures and five retained report directories reproduced byte-for-byte after the fixes.
 

@@ -1,36 +1,41 @@
 {
   "project": "csv-handoff-kit",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "license": "MIT",
-  "date": "2026-10-01",
-  "base_commit": "ad79f744b1cebd9ef4dbd0cd2d3c104a0217e6d1",
-  "scope": "Optional exact unique-text-key return matching in the existing project; no remote writes performed",
+  "date": "2026-10-15",
+  "base_commit": "3ea450e6988dc0a6cc41ae743c12b0619565497c",
+  "validation_stage": "local release candidate; no merge or release performed during this record",
+  "scope": "Reviewed cleared-numeric-value correction plus version and release-validation metadata; no new features",
   "runtime": "Python 3.10+; standard library only",
   "validation": {
-    "command": "python -m unittest discover -s tests -v",
-    "passed": 87,
+    "command": "python3 -m unittest discover -s tests -v",
+    "passed": 91,
     "failed": 0,
     "skipped": 0,
-    "stdlib_only_command": "python -S -m unittest discover -s tests -v",
-    "stdlib_only_passed": 85,
-    "stdlib_only_skipped": 2,
+    "stdlib_only_command": "python3 -S -m unittest discover -s tests -v",
+    "stdlib_only_passed": 88,
+    "stdlib_only_skipped": 3,
     "python": "3.12.14",
     "independent_reader": "openpyxl 3.1.5",
     "skill_validation": "passed",
     "compile_check": "passed",
-    "copied_skill_smoke": "keyed pack and verify passed with python -I from unrelated cwd",
-    "old_reader": "v0.1.0 rejected keyed v2 contract with exit 2",
-    "independent_extension_review": "completed: three narrow defects corrected with six regressions; 150 CSV and 50 independent XLSX oracle cases passed",
+    "clean_install": "75-file packaged skill extracted to fresh project; discovered as enabled by Codex CLI 0.159.2; no model invocation",
+    "copied_skill_smoke": "python -I -S with empty HOME, unrelated cwd containing spaces; pack, unchanged XLSX, changed return, sorted-only return and numeric clearing passed",
+    "fictional_comparison": "R4 added; R3 removed; R1 ID and status changes plus separate row movement; sorted-only content unchanged",
+    "new_pack_provenance": "tool_version 0.2.1; fixed v1 and keyed v2 schemas unchanged",
+    "historical_fixture_preservation": "Every examples/ file unchanged from PR2",
+    "pr2_remote_ci": "Python 3.10 and 3.13 passed for reviewed PR2, not this later metadata candidate",
+    "candidate_remote_ci": "Not run as part of this local candidate record",
     "historical_app_roundtrip": "v0.1.0: LibreOfficeDev 26.8.0.0.alpha0 standard fixture unchanged; one CR-to-LF edge detected",
+    "historical_application_escape_test": "LibreOfficeDev 26.8.0.0.alpha0 imports all seven literal keys exactly; its XLSX save changes several keys and correctly blocks on duplicate keys",
     "not_tested": [
       "Microsoft Excel",
       "stable LibreOffice",
       "keyed sorting in a desktop spreadsheet application",
-      "remote GitHub Actions for this extension"
-    ],
-    "application_escape_test": "LibreOfficeDev 26.8.0.0.alpha0 imports all seven literal keys exactly; its XLSX save changes several keys and correctly blocks on duplicate keys"
+      "Claude Code host discovery"
+    ]
   },
-  "release_decision": "Go for the documented experimental exact-text/keyed subset; no broad editor compatibility or security certification",
+  "release_decision": "Local candidate checks pass for the documented experimental subset; final remote CI and publication review remain release steps",
   "files": [
     {
       "path": ".github/workflows/test.yml",
@@ -49,8 +54,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 15718,
-      "sha256": "e32940aae372d494d159b0539354da3a372f7099b637814009f1df1ae74bac22"
+      "bytes": 15960,
+      "sha256": "5d805acb66b2e354b31029f25aaef3fd7541d04bd6cd3988bc791191b33bd424"
     },
     {
       "path": "SKILL.md",
@@ -74,13 +79,13 @@
     },
     {
       "path": "docs/test-results.txt",
-      "bytes": 10022,
-      "sha256": "65d8ae0f4346db2659ce9490e0d5462e76ed591efcee56db0c16cc9506d46bbe"
+      "bytes": 21719,
+      "sha256": "f49f846edaf70a145b163ffe8ddbb8ad7c3fe481e6abd9c1f01b8b5a9cefd2ef"
     },
     {
       "path": "docs/validation.md",
-      "bytes": 12014,
-      "sha256": "ff15f6a12a88629adbb3860179c0f5fa32ed6c150207d4e466199c00fe9de688"
+      "bytes": 15811,
+      "sha256": "19cf0bf246f66e23e29dd9cdf408937a1fb8d39f944f22db0bcd7b916d1000c1"
     },
     {
       "path": "examples/edited-check/diff.json",
@@ -384,8 +389,13 @@
     },
     {
       "path": "scripts/csv_handoff.py",
-      "bytes": 47427,
-      "sha256": "d7e24e97f2bd9d36bae74b8c5407e27b9832cecc5f77de52c57b61b46bb54c19"
+      "bytes": 47759,
+      "sha256": "590287158b6adf3ad79a29429e6c0e2231bfc835bdd458daeb0a4eacadc6de4f"
+    },
+    {
+      "path": "tests/test_cleared_numeric.py",
+      "bytes": 5684,
+      "sha256": "130170a732d68ad030631f75626b89f54017885e48efd42dc21446cdd8325a0f"
     },
     {
       "path": "tests/test_handoff.py",
