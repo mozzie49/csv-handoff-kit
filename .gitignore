@@ -3,3 +3,10 @@ __pycache__/
 .venv/
 handoff/
 check/
+
+# Browser trial build and tests
+browser/node_modules/
+browser/dist/
+browser/test-results/
+browser/playwright-report/
+browser/.fixtures/
