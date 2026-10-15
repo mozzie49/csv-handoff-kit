@@ -423,6 +423,11 @@ def compare_cell(wanted, got, typ, csv_mode, base, header=False):
         if wanted != got['value']:
             diffs.append(dict(base, kind='header_change' if header else 'text_change'))
     else:
+        # Numeric columns permit empty values. Clearing a value is a legitimate
+        # value change, not unsafe numeric syntax or a change to text storage.
+        if got['value'] == '' and (csv_mode or got['type'] in ('blank', 'text')):
+            diffs.append(dict(base, kind='numeric_value_change'))
+            return diffs
         if not csv_mode and got['type'] != 'number':
             diffs.append(dict(base, kind='type_change', expected_type='number', actual_type=got['type']))
         try:
