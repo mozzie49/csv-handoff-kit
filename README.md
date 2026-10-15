@@ -49,6 +49,10 @@ A returned `.csv` uses the original UTF-8 encoding/dialect contract. A returned 
 
 Text is compared by exact decoded field value. XLSX storage types are checked too. Numbers compare by decimal value: CSV `12.50` → `12.5` is a separate **representation change, values equal**, whereas `12.50` → `20.25` is a value change. Missing/empty spreadsheet cells are equivalent to empty fields; an empty numeric field remains empty, never zero. By default, sorting, deleting, or inserting rows yields positional differences. Optional key matching below reports these as records and row movements. Formatting is not compared.
 
+Clearing a previously numeric cell is a `numeric_value_change`, including when
+the previous value was zero. An empty value is allowed by the numeric contract;
+it is neither zero nor a contract violation. Whitespace-only text is not empty.
+
 **Returned formulas are rejected**, including ordinary added `SUM` formulas and formulas with cached results. Return a separate literal-values-only copy. Macros, external relationships, embeddings, defined names, merged cells, and unsupported package parts are also rejected. This is deliberately narrower than a general spreadsheet reader.
 
 ## Match returned rows after sorting (optional)
@@ -115,7 +119,7 @@ python -m venv .venv
 .venv/bin/python -m unittest discover -s tests -v
 ```
 
-Without openpyxl, the two independent-reader tests are visibly skipped; the stdlib tests still run. Test coverage and known limits are recorded in [`docs/validation.md`](docs/validation.md). Code, skill text, fixtures, workbook template, and illustrated preview were written for this project and are under [MIT](LICENSE). Development, documentation, and validation were AI-assisted; the test record states what was actually checked and does not imply manual authoring or comprehensive application compatibility. No vendor documentation or third-party templates are bundled. Python is provided separately under its own license; optional test dependencies keep their upstream licenses (openpyxl: MIT; et-xmlfile: MIT).
+Without openpyxl, the three independent-reader tests are visibly skipped; the stdlib tests still run. Test coverage and known limits are recorded in [`docs/validation.md`](docs/validation.md). Code, skill text, fixtures, workbook template, and illustrated preview were written for this project and are under [MIT](LICENSE). Development, documentation, and validation were AI-assisted; the test record states what was actually checked and does not imply manual authoring or comprehensive application compatibility. No vendor documentation or third-party templates are bundled. Python is provided separately under its own license; optional test dependencies keep their upstream licenses (openpyxl: MIT; et-xmlfile: MIT).
 
 ---
 
