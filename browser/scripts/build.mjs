@@ -1,0 +1,17 @@
+import {build} from 'esbuild';
+import {mkdir,cp,writeFile,readFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+const parserHash=createHash('sha256').update(await readFile('node_modules/csv-parse/dist/esm/sync.js')).digest('hex');
+if(parserHash!=='be7c2e7e5769134ee9adceece0516979bb930efb81b6a8c8421ec6bb98941bc3')throw new Error('Review embedded parser/polyfill license provenance before building an updated bundle.');
+await mkdir('dist/assets',{recursive:true});
+await cp('public','dist',{recursive:true});
+await build({entryPoints:{app:'src/app.js',worker:'src/worker.js'},bundle:true,format:'esm',outdir:'dist/assets',target:['es2022'],minify:true,legalComments:'linked'});
+const notices=['--- CSV Handoff Kit ---\n'+await readFile('../LICENSE','utf8')];
+for(const name of ['csv-parse','fflate'])notices.push(`\n--- ${name} ---\n`+await readFile(`node_modules/${name}/LICENSE`,'utf8'));
+for(const name of ['buffer-es6-4.9.3','base64-js','is-buffer'])notices.push(`\n--- Embedded ${name} ---\n`+await readFile(`licenses/${name}-LICENSE.txt`,'utf8'));
+const noticeText=notices.join('\n');
+for(const required of ['csv-handoff-kit contributors','Adaltas','Arjun Barrett','Feross Aboukhadijeh','Fair Oaks Labs','Jameson Little'])if(!noticeText.includes(required))throw new Error(`Missing required notice: ${required}`);
+await writeFile('dist/THIRD-PARTY-LICENSES.txt',noticeText);
+await cp('../LICENSE','dist/LICENSE');
+await cp('licenses/PROVENANCE.md','dist/NOTICE-PROVENANCE.txt');
+console.log('Built self-contained static app in browser/dist. Serve it over HTTP; no runtime CDN or backend.');

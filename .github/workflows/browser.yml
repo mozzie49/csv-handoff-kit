@@ -1,0 +1,39 @@
+name: browser trial
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: browser
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: browser/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install -r ../requirements-dev.txt
+      - run: npm ci
+      - run: npm run check
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-trial-results
+          path: browser/test-results/
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        with:
+          name: browser-trial-static
+          path: browser/dist/
+          if-no-files-found: error
+          retention-days: 7

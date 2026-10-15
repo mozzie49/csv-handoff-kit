@@ -8,6 +8,10 @@ Python 3.10+ · standard library only · MIT · no account, network calls, telem
 
 ![Illustrated handoff preview, not a screenshot of Excel](docs/preview.svg)
 
+## Browser-only all-text trial
+
+A [static browser converter](browser/README.md) is included for trying the basic CSV → all-text XLSX handoff without running Python. It has a bundled fictional sample and keeps selected files in the browser. This focused trial does not create contracts or risk receipts, select numeric columns, or compare returned files. See its build instructions, supported subset, and validation status before hosting it. The Python workflow below is unchanged.
+
 ## Try the fictional example
 
 From this repository, choose output directories that do not already contain output files:
