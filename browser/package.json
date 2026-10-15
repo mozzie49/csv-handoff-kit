@@ -1,0 +1,17 @@
+{
+  "name": "csv-handoff-browser-trial",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "test:readback": "node scripts/write-fixtures.mjs && python3 tests/readback.py",
+    "check": "npm test && npm run build && npm run test:readback",
+    "serve": "node scripts/serve.mjs",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {"csv-parse": "7.0.3", "fflate": "0.8.3"},
+  "devDependencies": {"@playwright/test": "1.64.1", "esbuild": "0.28.2"},
+  "engines": {"node": ">=22"}
+}
