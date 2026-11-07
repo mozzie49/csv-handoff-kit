@@ -103,6 +103,10 @@ This is a conservative decimal round-trip rule, not arbitrary-precision spreadsh
 - Raw CSV reopened in spreadsheet software can still be coerced or interpreted as formulas. The generated, explicitly typed XLSX is the supported handoff
 - XLSX structure and independent openpyxl 3.1.5 readback of the main ID/formula/numeric fixtures are tested. One **LibreOfficeDev 26.8.0.0.alpha0** headless XLSX save preserved the standard fixture; a separate CR→LF normalization was detected. In v0.2.0, an escape-like-key fixture imports correctly in that development build, but XLSX save changes some literals; the verifier blocks the resulting duplicate keys (see [validation](docs/validation.md)). **Microsoft Excel and stable LibreOffice releases have not been tested**
 
+## New: CSV Key Audit Skill
+
+[CSV Key Audit](skills/csv-key-audit/README.md) is a separate, read-only Skill for checking duplicate or empty row identifiers before a keyed CSV comparison. It also explores inclusion-minimal composite keys among explicitly selected candidate columns across one or two files. It uses only Python standard-library modules, prints source record locations, and hides cell values by default. It does not choose a business key, deduplicate rows, or replace the returned-file diff below. [Skill entrypoint](skills/csv-key-audit/SKILL.md).
+
 ## Use as a skill
 
 Point an agent at [`SKILL.md`](SKILL.md) and this repository directory. It resolves the script relative to the skill and runs locally. No global installation is needed. The skill requires explicit numeric-column and optional key-column choices, preserves the all-text/fixed-order defaults, and distinguishes rejection from a completed return check.
