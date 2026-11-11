@@ -24,6 +24,8 @@ Read the JSON and process exit status:
 
 Locations give 1-based **data record** numbers plus physical line start/end. A quoted multiline cell is one record. Previews are capped; total counts and explicit truncation flags describe omitted records/groups. The helper prints column names, counts and locations, but not cell values by default. Use `--show-values` only when the user wants local duplicate-key values in the report. Reports may still reveal schema, counts and file hashes; sharing is a separate action.
 
+When explaining duplicate counts or assessing a proposed composite key, read [duplicate review](references/duplicate-review.md). Distinguish every row participating in a repeated key from the rows beyond one per group; neither count identifies rows that are safe to delete.
+
 ## Explore a composite key only when requested
 
 If the chosen column is ambiguous and the user wants help choosing identifiers, obtain the candidate columns they consider meaningful. Search only that list:
