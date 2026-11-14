@@ -26,7 +26,7 @@ class AuditError(ValueError):
     pass
 
 
-def load_table(path, delimiter=',', quotechar='"'):
+def load_table(path, delimiter=',', quotechar='"', skip_blank_records=False):
     """Read a bounded regular file once. Never infer types or dialect."""
     for name, value in [('delimiter', delimiter), ('quotechar', quotechar)]:
         if len(value) != 1 or value in '\r\n\x00' or (not value.isprintable() and value != '\t'):
@@ -49,7 +49,8 @@ def load_table(path, delimiter=',', quotechar='"'):
     csv.field_size_limit(MAX_FIELD)
     reader = csv.reader(io.StringIO(text, newline=''), delimiter=delimiter,
                         quotechar=quotechar, strict=True)
-    rows, locations = [], []
+    rows, locations, skipped = [], [], []
+    source_record_count = skipped_count = 0
     try:
         headers = next(reader, None)
         if not headers or len(headers) > MAX_COLUMNS:
@@ -58,10 +59,18 @@ def load_table(path, delimiter=',', quotechar='"'):
             raise AuditError('headers must be nonempty and unique exact strings')
         last_line = reader.line_num
         for record, row in enumerate(reader, 1):
+            source_record_count = record
             location = {'record': record, 'line_start': last_line + 1, 'line_end': reader.line_num}
             last_line = reader.line_num
             if record > MAX_RECORDS or (record + 1) * len(headers) > MAX_CELLS:
                 raise AuditError('input exceeds record or cell budget')
+            # Only an entirely empty CSV record. Quoted empty fields, spaces,
+            # delimiters and blank lines inside a quoted field are still data.
+            if skip_blank_records and row == []:
+                skipped_count += 1
+                if len(skipped) < PREVIEW:
+                    skipped.append(location)
+                continue
             if len(row) != len(headers):
                 raise AuditError(f'data record {record} (physical lines {location["line_start"]}-{location["line_end"]}) has {len(row)} fields; expected {len(headers)}')
             rows.append(row)
@@ -69,6 +78,9 @@ def load_table(path, delimiter=',', quotechar='"'):
     except csv.Error as exc:
         raise AuditError(f'invalid or over-limit CSV near physical line {reader.line_num}') from exc
     return {'headers': headers, 'rows': rows, 'locations': locations,
+            'source_record_count': source_record_count,
+            'skipped_blank_record_count': skipped_count,
+            'skipped_blank_records': skipped,
             'sha256': hashlib.sha256(raw).hexdigest(), 'bytes': len(raw)}
 
 
@@ -149,13 +161,14 @@ def candidate_keys(tables, columns, max_width=3):
             'scope': 'Only supplied candidates and width; uniqueness is observed, not semantic identity.'}
 
 
-def audit(paths, columns, delimiter=',', quotechar='"', candidates=False, max_width=3, show_values=False):
+def audit(paths, columns, delimiter=',', quotechar='"', candidates=False, max_width=3, show_values=False,
+          skip_blank_records=False):
     if not 1 <= len(paths) <= 2:
         raise AuditError('provide one or two input files')
     tables = []
     for i, path in enumerate(paths, 1):
         try:
-            tables.append(load_table(path, delimiter, quotechar))
+            tables.append(load_table(path, delimiter, quotechar, skip_blank_records))
         except (AuditError, OSError) as exc:
             # Avoid leaking source paths or cell values in ordinary errors.
             detail = str(exc) if isinstance(exc, AuditError) else type(exc).__name__
@@ -163,9 +176,17 @@ def audit(paths, columns, delimiter=',', quotechar='"', candidates=False, max_wi
     report = {'schema': 'csv-key-audit/v1', 'mode': 'candidates' if candidates else 'check',
               'columns': columns, 'inputs': [], 'matching': 'exact text; empty means zero-length field',
               'cell_values_included': show_values and not candidates}
+    if skip_blank_records:
+        report['blank_record_policy'] = 'skip_empty_records'
     for i, table in enumerate(tables, 1):
-        report['inputs'].append({'input': i, 'sha256': table['sha256'], 'bytes': table['bytes'],
-                                 'record_count': len(table['rows'])})
+        item = {'input': i, 'sha256': table['sha256'], 'bytes': table['bytes'],
+                'record_count': len(table['rows'])}
+        if skip_blank_records:
+            item.update({'source_record_count': table['source_record_count'],
+                         'skipped_blank_record_count': table['skipped_blank_record_count'],
+                         'skipped_blank_records': table['skipped_blank_records'],
+                         'skipped_blank_records_truncated': table['skipped_blank_record_count'] > PREVIEW})
+        report['inputs'].append(item)
     if candidates:
         report['candidates'] = candidate_keys(tables, columns, max_width)
         okay = bool(report['candidates']['minimal_observed_keys'])
@@ -190,12 +211,15 @@ def main(argv=None):
     choice.add_argument('--candidate', action='append', help='User-approved candidate column; repeat')
     parser.add_argument('--max-width', type=int, choices=range(1, 4), default=3)
     parser.add_argument('--show-values', action='store_true', help='Include bounded duplicate-key values in the local report')
+    parser.add_argument('--skip-blank-records', action='store_true',
+                        help='Ignore entirely empty data records, reporting their original locations; never skip empty fields')
     args = parser.parse_args(argv)
     try:
         if args.show_values and args.candidate:
             raise AuditError('--show-values is supported only with --key')
         result, code = audit(args.files, args.key or args.candidate, args.delimiter,
-                             args.quotechar, bool(args.candidate), args.max_width, args.show_values)
+                             args.quotechar, bool(args.candidate), args.max_width, args.show_values,
+                             args.skip_blank_records)
     except (AuditError, ValueError) as exc:
         result, code = {'schema': 'csv-key-audit/v1', 'status': 'rejected', 'error': str(exc)}, 2
     print(json.dumps(result, ensure_ascii=True, indent=2))

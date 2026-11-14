@@ -24,6 +24,8 @@ Read the JSON and process exit status:
 
 Locations give 1-based **data record** numbers plus physical line start/end. A quoted multiline cell is one record. Previews are capped; total counts and explicit truncation flags describe omitted records/groups. The helper prints column names, counts and locations, but not cell values by default. Use `--show-values` only when the user wants local duplicate-key values in the report. Reports may still reveal schema, counts and file hashes; sharing is a separate action.
 
+By default, a completely blank record stops the audit. Add `--skip-blank-records` only when the requested audit explicitly excludes those records. It skips only empty CSV records, not quoted empty fields, whitespace, delimiter-only rows or blank lines inside quoted cells. It never changes the source. Original record numbers still include skipped records; `record_count` counts audited records, while `source_record_count` includes skipped ones. Report the skip policy, count and bounded locations from the JSON. This does not validate identifier formats or database membership, or change the stricter CSV Handoff Kit pack/verify input policy.
+
 When explaining duplicate counts or assessing a proposed composite key, read [duplicate review](references/duplicate-review.md). Distinguish every row participating in a repeated key from the rows beyond one per group; neither count identifies rows that are safe to delete.
 
 ## Explore a composite key only when requested
@@ -40,6 +42,6 @@ Present the candidate and its meaning for the user to choose. Do not add Amount,
 
 ## Exactness and limits
 
-`00123` differs from `123`; whitespace, case and Unicode code points remain exact. Empty means a zero-length field, not whitespace, `NULL` or `NA`. There is no type inference, trimming, normalization or formula evaluation. Both files use the same explicit dialect. UTF-8 with optional BOM only; up to 10 MiB per file, 100,000 data records, 256 columns, 1,000,000 cells including headers, and 32,767 Unicode characters per field. Headers must be nonempty and unique. Blank lines and ragged rows are rejected. The CLI only reads regular files and writes JSON to stdout.
+`00123` differs from `123`; whitespace, case and Unicode code points remain exact. Empty means a zero-length field, not whitespace, `NULL` or `NA`. There is no type inference, trimming, normalization or formula evaluation. Both files use the same explicit dialect. UTF-8 with optional BOM only; up to 10 MiB per file, 100,000 source data records, 256 columns, 1,000,000 cells including headers, and 32,767 Unicode characters per field. Skipped records still consume the record and cell budgets. Headers must be nonempty and unique; a leading blank header is rejected even with the skip option. Blank records are rejected by default; ragged nonblank records are always rejected. The CLI only reads regular files and writes JSON to stdout.
 
 See [README.md](README.md) for fictional examples, tests, prior art, and validation limits. It is a preflight tool, not a replacement for a CSV diff, schema validator, spreadsheet reader, or data-profiling system.

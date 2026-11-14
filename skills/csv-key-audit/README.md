@@ -34,13 +34,21 @@ Copy this complete `csv-key-audit` directory to the skill location supported by 
 
 A location has a 1-based data record number and physical line start/end. Quoted multiline fields do not shift the meaning of the data record number. At most 20 duplicate groups, 20 records per group, and 20 empty-key records are previewed. Total counts and truncation flags remain explicit. Opt-in values are limited to 200 characters per component, with truncation flags.
 
+## Audit across blank records, explicitly
+
+When the requested audit excludes completely blank records, add `--skip-blank-records` to the same command. The default still rejects them. Only an empty CSV record is skipped: `""`, a space, a delimiter-only row, and a blank line inside a quoted cell are not skipped. A blank header and nonblank ragged rows still fail. Source files are never rewritten.
+
+With this option the report adds `blank_record_policy: "skip_empty_records"`. Each input adds `source_record_count`, `skipped_blank_record_count`, `skipped_blank_records` (at most 20 original locations) and `skipped_blank_records_truncated`. Existing `record_count` counts audited records, so it plus the skipped count equals the source count. Location record numbers include skipped records; physical lines are not renumbered. Skipped records still consume record and cell budgets. Header plus blank records alone is `no_data`, not a valid key.
+
+This policy applies to both inputs and candidate search. It does not validate application-specific identifier formats or database existence, and it does not relax the parent CSV Handoff Kit's pack/verify input rules. A successful key audit is not import approval.
+
 ## Boundaries
 
 - Matching is exact decoded text: no numeric coercion, trimming, case folding, Unicode normalization or formula evaluation. `00123`, `123`, `A`, `a`, and space-padded values remain different. Only the zero-length field is empty; `NULL`, `NA` and whitespace are literal values.
 - Unique/nonempty headers and rectangular rows are required. A missing field is rejected rather than repaired. A header-only input does not establish a key.
 - Both files use the explicitly selected delimiter and quote character. Selected header names must exist on both sides; their order can differ. Other columns, row content and key membership across files are not compared.
 - Candidate search uses only the supplied columns: at most 10 candidates and width 3. It returns inclusion-minimal combinations in that search scope, not all keys in the dataset. Amounts or row numbers are not automatically added to force uniqueness.
-- Per-file limits: 10 MiB, 100,000 data records, 256 columns, 1,000,000 cells including headers, 32,767 Unicode characters per field. UTF-8 with optional BOM, regular files only. It is not a streaming large-data profiler or an XLSX reader.
+- Per-file limits: 10 MiB, 100,000 source data records (including skipped records), 256 columns, 1,000,000 cells including headers, 32,767 Unicode characters per field. Cell-budget accounting uses every source record times the header width, including skipped records. UTF-8 with optional BOM, regular files only. It is not a streaming large-data profiler or an XLSX reader.
 - It does not deduplicate, choose the business key, join records, change a handoff contract, or authorize data sharing.
 
 ## Runtime and memory
@@ -69,9 +77,20 @@ Choose the tool for the question you need answered:
 
 Blank handling also differs: this Skill treats only the zero-length field as empty; whitespace-only identifiers remain literal strings. Local Row Check routes whitespace-only key components to review. Neither policy should be selected silently.
 
+[EvalBridge issue #758](https://github.com/Vempower-Global-Strategy-Services/EvalBridge-bugs/issues/758) reports confusing duplicate-row references and asks to ignore blank rows. Its public test text, reconstructed as a CSV with LF endings, contains one repeated key at data records 13/14 (physical lines 14/15) and one blank record at record 16 (line 17). The default audit rejects that blank record; explicit skip mode reports the duplicate without losing the original locations. This is not a fix or user trial of EvalBridge, and no AppId format or database validity was checked. The source application's use of the word "row" is not assumed to mean our record or physical-line coordinate.
+
+Skipping empty lines is established functionality. [pandas read_csv](https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html) already offers `skip_blank_lines`; a short [Python csv](https://docs.python.org/3/library/csv.html) script can also filter empty records. This option merely integrates an explicit policy with this Skill's exact-text key audit, original locations, bounded report and unchanged source. It is not a novel parsing algorithm or a claim of superiority over those alternatives.
+
 Candidate-key discovery is established work; [Metanome/HyUCC](https://github.com/HPI-Information-Systems/Metanome), pandas, database queries and schema validators may already fit the task. This Skill's small, dependency-free preflight is an option when its bounded search and report format are useful, not a proven improvement over those alternatives. The parent CSV Handoff Kit still provides typed handoffs and actual return diffs; this Skill works without a handoff contract.
 
 ## Validation
+
+On 2026-11-14, Python 3.12.14 with preinstalled openpyxl 3.1.5:
+
+- The complete repository Python suite passed **138 tests**, including the existing 30 key-audit tests and 17 new blank-record tests. The new tests include 120 generated cases checked against source-chunk locations, LF/CRLF/CR, multiline fields, exact empty-field distinctions, both inputs, candidate search, limits, bounded previews and read-only CLI behavior.
+- An independent reviewer re-ran all 138 tests and compared 512 additional default-mode cases with the previous script; complete outputs/errors agreed. A separate explicit-dialect check covered semicolon delimiters, single-quote quoting, CRLF, multiline content and two-file key checks.
+- The reconstructed #758 test data was 345 bytes, SHA-256 `a8a8711cec96f0191808c92bb78545e603bb7134fe0d45ae4f7f5376286ecbc4`. Default mode exited 2; explicit skip mode exited 1 with 25 source records, 24 audited records, one skipped record and one duplicate group containing two records. Independent readback confirmed the input bytes were unchanged. The original application and its server were not run.
+- No browser implementation changed and no fresh browser or spreadsheet-application test was performed. Local checks do not establish a hosted CI result or external adoption.
 
 On 2026-11-07, Python 3.12.14:
 
